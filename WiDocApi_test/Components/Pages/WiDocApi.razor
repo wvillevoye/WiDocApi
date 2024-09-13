@@ -1,0 +1,14 @@
+﻿@page "/apidocs"
+@rendermode InteractiveServer
+<WiDocApi_Blazor.Apidocs T="@object" classModels="@modelList" jsonFilePath="@filePath" />
+
+@code {
+    private List<object> modelList = new();
+    private string filePath = "ApiEndpoints.json";
+    protected override void OnInitialized()
+    {
+        // Initialize your models and add them to the list
+        modelList.Add(new Models.Person());
+        
+    }
+}

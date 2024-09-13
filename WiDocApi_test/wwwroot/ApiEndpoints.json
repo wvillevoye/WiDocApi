@@ -1,0 +1,50 @@
+[
+  {
+    "Id": 1,
+    "BaseUrl": null,
+    "Group": "Group1",
+    "Path": "/api/Person/{SearchById}",
+    "Description": "Returns information about the person module specified by Id.",
+    "Method": "GET",
+    "RequiresInput": true,
+    "CacheDurationMinutes": 10
+  },
+  {
+    "Id": 2,
+    "BaseUrl": null,
+    "Group": "Group1",
+    "Path": "/api/Person/search/{SearchStartWithLastName}",
+    "Description": "Returns a list of persons start with LastName",
+    "Method": "GET",
+    "RequiresInput": true,
+    "CacheDurationMinutes": 10
+  },
+  {
+    "Id": 3,
+    "BaseUrl": null,
+    "Group": "Group2",
+    "Path": "/api/Person",
+    "Description": "Add a person",
+    "Method": "POST",
+    "RequiresInput": false,
+    "CacheDurationMinutes": 0
+  },
+  {
+    "Id": 4,
+    "BaseUrl": null,
+    "Group": "Group2",
+    "Path": "/api/Person/{ById}",
+    "Description": "Update a person",
+    "Method": "PUT",
+    "RequiresInput": true
+  },
+  {
+    "Id": 5,
+    "BaseUrl": null,
+    "Group": "Group2",
+    "Path": "/api/Person/{ById}",
+    "Description": "Delete a person",
+    "Method": "DELETE",
+    "RequiresInput": true
+  }
+]

@@ -1,0 +1,243 @@
+﻿@typeparam T
+@inject NavigationManager Navigation
+@inject IConfiguration Configuration
+@inject StartEndpoint StartEndpoint
+@inject LoadEndpoints loadEndpoints
+@inject HttpMethodClassMapper HttpMethodClassMapper
+@inject IJSRuntime jsRuntime
+@inject SessionStorageService sessionStorageService
+
+
+
+        <ApiKeyModal @ref="apiKeyModal" />
+       
+      
+        
+        @if (!string.IsNullOrEmpty(readErrorJson))
+        {
+             <div class="row">
+                <div class="col-md-12">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Error:</strong> @readErrorJson
+                    </div>
+                </div>
+             </div>
+        }
+
+
+
+
+        <div class="row mb-3">
+            @if (IsValidApiKeyConfigured())
+            {
+                <div class="col-md-12 text-end">
+                    @if (checkApiKey)
+                    {
+                        <button class="btn btn-secondary" @onclick="() => apiKeyModal.Show()">Authorize  <i class="bi bi-lock"></i></button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary" @onclick="() => apiKeyModal.Show()">Authorize <i class="bi bi-unlock"></i></button>
+                    }
+                </div>
+            }
+            <div class="col-md-12">
+                <h3 class="mb-4">API Documentation</h3>
+                <p>This documentation provides information about the available API endpoints. You can try them out directly from this page.</p>
+                    @foreach (var group in groupedEndpoints)
+                    {
+                        <WiDocApi_Blazor.Components.ApiEndpointAccordion T="T"
+                                              Endpoints="group.Endpoints"
+                                              groupName="@group.GroupName"
+                                              checkApiKey="checkApiKey"
+                                              isLoading="isLoading"
+                                              StartApi="StartApi"
+                                              IsValidApiKeyConfigured="IsValidApiKeyConfigured" />
+                    }
+
+                
+            </div>
+        </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                      <WiDocApi_Blazor.Components.ModelAccordion T="T" classModels="classModels" />
+              </div>
+        </div>
+
+@code {
+
+    [Parameter]
+    public List<T>? classModels { get; set; } = new();
+    [Parameter]
+    public string jsonFilePath { get; set; } = "ApiEndpoints.json";
+
+    private List<GroupedApiEndpoints> groupedEndpoints = new List<GroupedApiEndpoints>();
+
+    
+    private bool isValid { get; set; }
+    private ApiKeyModal? apiKeyModal;
+    private string baseUrl => string.IsNullOrEmpty(Configuration["ApiSettings:BaseUrl"])  ? Navigation.BaseUri.TrimEnd('/') : Configuration["ApiSettings:BaseUrl"]!.TrimEnd('/');
+    private string readErrorJson = string.Empty;
+    private bool checkApiKey = false;
+    private List<ApiEndpoint> Endpoints { get; set; } = new();
+    private bool isLoading = false;
+ 
+    public bool IsValidApiKeyConfigured()
+    {
+        var apiKey = Configuration["ApiSettings:ValidApiKey"];
+        // Check if the value exists and is not null or empty
+        return !string.IsNullOrEmpty(apiKey);
+    }
+
+    protected override  void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+        {
+
+            var apiKey = Configuration["ApiSettings:ValidApiKey"];
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+                var queryParams =QueryHelpers.ParseQuery(uri.Query);
+
+                if (queryParams.TryGetValue("isValid", out var isValidString) && bool.TryParse(isValidString, out bool isValid) && isValid)
+                {
+                    checkApiKey = true;
+                }
+
+                StateHasChanged();
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("isValid", out var isValidString) && bool.TryParse(isValidString, out bool isValid) && isValid)
+        {
+            checkApiKey = true;
+        }
+
+
+        var resultend = await loadEndpoints.LoadEndpointsFromJsonFile(baseUrl, jsonFilePath).ConfigureAwait(false);
+        Endpoints = resultend.endpoints;
+        groupedEndpoints = Endpoints.GroupBy(e => e.Group)
+                                           .Select(g => new GroupedApiEndpoints
+                                               {
+                                                   GroupName = g.Key,
+                                                   Endpoints = g.ToList()
+                                               })
+                                           .ToList();
+        
+        
+        readErrorJson = resultend.messages;
+        
+        foreach (var endpoint in Endpoints)
+        {
+            InitializeDynamicInputValues(endpoint);
+        }
+
+    }
+
+    private async Task StartApi(ApiEndpoint endpoint)
+    {
+        isLoading= true;
+        if (IsValidApiKeyConfigured())
+        {
+            if (!checkApiKey)
+            {
+                endpoint.ApiResponse = "Sorry for using this API, you need a key!";
+                isLoading = false;
+                return;
+            }
+        }
+      
+        if (endpoint.RequiresInput)
+        {
+            // Controleer of alle vereiste inputwaarden zijn ingevuld
+            foreach (var param in ExtractParametersFromPath(endpoint.Path!))
+            {
+                if (string.IsNullOrEmpty(endpoint.DynamicInputValues[param]))
+                {
+                    endpoint.ApiResponse = $"Input required for '{param}' but not provided.";
+                    isLoading = false;
+                    return;
+                }
+            }
+        }
+
+        await StartEndpoint.TryEndpoint(endpoint, baseUrl).ConfigureAwait(false);
+        endpoint.Curl = CreateCurl(endpoint);
+       
+        isLoading = false;
+        
+    }
+    
+    private string CreateCurl(ApiEndpoint endpoint)
+    {
+       
+        var sb = new StringBuilder();
+        sb.Append($"curl -X '{endpoint.Method}' \n");
+        sb.Append($"'{endpoint.ApiRequest}' \n");
+        sb.Append($"-H 'Content-Type: application/json' \n");
+        if (IsValidApiKeyConfigured())
+        {
+            string apiKey = Configuration["ApiSettings:ValidApiKey"]!.ToString();
+            sb.Append($"-H 'X-Api-Key: {apiKey}' \n");  
+        }
+        if(endpoint.Method == "POST" || endpoint.Method == "PUT" || endpoint.Method == "PATCH")
+        {
+            sb.Append($"-d '{endpoint.Payload}'");
+        }
+        return sb.ToString();
+    }
+
+    private IEnumerable<string> GetPropertyDescriptions(object model)
+    {
+        var descriptions = new List<string>();
+        var type = model.GetType();
+
+        foreach (var property in type.GetProperties())
+        {
+            var attribute = property.GetCustomAttribute<WiDocApiSchemaAttribute>();
+            if (attribute != null)
+            {
+                descriptions.Add($"{property.Name}: ({attribute.Description})");
+            }
+        }
+
+        return descriptions;
+    }
+
+    private List<string> ExtractParametersFromPath(string path)
+    {
+        var parameters = new List<string>();
+
+        // Gebruik een regex om parameters te vinden tussen accolades {}
+        var matches = System.Text.RegularExpressions.Regex.Matches(path, @"\{(.*?)\}");
+
+        foreach (var match in matches)
+        {
+            parameters.Add(match.ToString()!.Trim('{', '}'));
+        }
+
+        return parameters;
+    }
+
+    private void InitializeDynamicInputValues(ApiEndpoint endpoint)
+    {
+        var parameters = ExtractParametersFromPath(endpoint.Path!);
+        foreach (var param in parameters)
+        {
+            // Voeg elke parameter toe aan de dictionary met een lege string als waarde
+            if (!endpoint.DynamicInputValues.ContainsKey(param))
+            {
+                endpoint.DynamicInputValues[param] = string.Empty;
+            }
+        }
+    }
+
+}
+

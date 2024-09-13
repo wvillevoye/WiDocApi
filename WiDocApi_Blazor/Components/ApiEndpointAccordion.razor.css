@@ -1,0 +1,156 @@
+﻿.accordion-get {
+    --bs-accordion-btn-bg: #ECF3FB; /* Green for GET */
+    border: 2px solid #2196F3;
+}
+
+.accordion-post {
+    --bs-accordion-btn-bg: #EAF6F0; /* Blue for POST */
+    border: 2px solid #42B789;
+}
+
+.accordion-put {
+    --bs-accordion-btn-bg: #FFF5E6; /* Orange for PUT */
+    border: 2px solid #FCA130;
+}
+
+.accordion-patch {
+    --bs-accordion-btn-bg: #EBF8F5; /* Purple for PATCH */
+    border: 2px solid #57E3C3;
+}
+
+.accordion-delete {
+    --bs-accordion-btn-bg: #FDEEEE; /* Red for DELETE */
+    border: 2px solid #F93E3E;
+}
+
+.accordion-head {
+    --bs-accordion-btn-bg: #F3EAFD; /* Purple for HEAD */
+    border: 2px solid #9027FA;
+}
+
+.accordion-options {
+    --bs-accordion-btn-bg: #E6F0FB; /* Blue for OPTIONS */
+    border: 2px solid #0D5CA6;
+}
+
+.accordion-moduleinfo {
+    --bs-accordion-btn-bg: #ECF3FB;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%23333' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill-rule='evenodd' d='M0 8a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H1a1 1 0 0 1-1-1z' clip-rule='evenodd'/%3e%3c/svg%3e");
+    background-size: 16px 16px;
+}
+
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%23333' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill-rule='evenodd' d='M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z' clip-rule='evenodd'/%3e%3c/svg%3e");
+    background-size: 16px 16px;
+    transform: scale(0.75) !important;
+}
+
+.accordion-item-spacing {
+    margin-bottom: 0.3rem; /* Adjust as needed */
+}
+
+
+.btn-overall {
+    color: white;
+    font-size: 10px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-get {
+    background-color: #2196F3;
+    border-color: #2196F3;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 23px;
+    padding-right: 23px;
+}
+
+.btn-post {
+    background-color: #42B789;
+    border-color: #42B789;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 19px;
+    padding-right: 19px;
+}
+
+.btn-put {
+    background-color: #FCA130;
+    border-color: #FCA130;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.btn-patch {
+    background-color: #57E3C3;
+    border-color: #57E3C3;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 17px;
+    padding-right: 17px;
+}
+
+
+.btn-delete {
+    background-color: #F93E3E;
+    color: white;
+    border-color: #F93E3E;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 13px;
+    padding-right: 13px;
+}
+
+.btn-head {
+    background-color: #9027FA;
+    border-color: #9027FA;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+
+.btn-options {
+    background-color: #0D5CA6; /* Red for DELETE */
+    border-color: #0D5CA6;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+.auto-resize {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.scroll {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+pre {
+    overflow: auto;
+}
+
+.small-text {
+    font-size: 0.8rem; /* Adjust the size as needed */
+}
+
+.small-text-path {
+    font-size: 0.9rem; /* Adjust the size as needed */
+}
+
+.panel-heading {
+    padding: 20px;
+}

@@ -1,0 +1,56 @@
+﻿@page "/persons"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.EntityFrameworkCore
+@using System.Linq;
+@using WiDocApi_test.Models
+@inject SamplePersonsContext dbContext
+@rendermode InteractiveServer
+
+<h3>Persons</h3>
+
+<div class="page-size-chooser">
+    Items per page:
+    <select @bind="@pagination.ItemsPerPage">
+        <option>5</option>
+        <option>10</option>
+        <option>20</option>
+      
+    </select>
+</div>
+
+<div class="grid" >
+    <QuickGrid Items="@itemsQueryable" Pagination="@pagination" >
+        <PropertyColumn Title="PersonId" Property="@(c => c.PersonID)" />
+        <PropertyColumn Title="FirstName" Property="@(c => c.FirstName)" />
+        <PropertyColumn Title="LastName" Property="@(c => c.LastName)" />
+        <PropertyColumn Title="Age" Property="@(c => c.Age)" />
+        <PropertyColumn Title="Email" Property="@(c => c.Email)" />
+        <PropertyColumn Title="State" Property="@(c => c.State)" />
+        <PropertyColumn Title="ZipCode" Property="@(c => c.ZipCode)" />
+    </QuickGrid>
+</div>
+<Paginator State="@pagination" />
+
+@code {
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+    IQueryable<Person>? itemsQueryable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var _persons = await dbContext.Persons.OrderBy(X => X.LastName).ToListAsync();
+        if (_persons == null || !_persons.Any())
+        {
+            Console.WriteLine("No data found in the Persons table.");
+        }
+        else
+        {
+            foreach (var item in _persons)
+            {
+                Console.WriteLine($"Retrieved {item.LastName}");
+            }
+            
+            Console.WriteLine($"Retrieved {_persons.Count} persons.");
+        }
+        itemsQueryable = _persons!.AsQueryable();
+    }
+}

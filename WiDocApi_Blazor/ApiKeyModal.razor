@@ -1,0 +1,77 @@
+﻿
+@inject IConfiguration Configuration
+@inject IJSRuntime jsRuntime
+@inject NavigationManager Navigation
+
+@if (isVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h6 class="modal-title">Enter API Key</h6>
+                    <button type="button" class="close" aria-label="Close" @onclick="Hide">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="background-color:whitesmoke">
+                    <input type="text" @bind="inputApiKey" class="form-control" placeholder="Enter API Key" />
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger mt-2">
+                            @errorMessage
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer" style="background-color:whitesmoke">
+                    <button type="button" class="btn btn-secondary btn-sm" @onclick="Hide">Close</button>
+                    <button type="button" class="btn btn-primary btn-sm" @onclick="ValidateApiKey">Validate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+@code {
+   
+    private string inputApiKey = string.Empty;
+    private bool isVisible = false;
+    private string? errorMessage = null;
+
+    public void Show()
+    {
+        isVisible = true;
+        StateHasChanged();
+    }
+
+    public void Hide()
+    {
+        isVisible = false;
+        errorMessage = null; // Reset error message when hiding the modal
+        StateHasChanged();
+    }
+
+    private void ValidateApiKey()
+    {
+        var validApiKey = Configuration["ApiSettings:ValidApiKey"];
+        if (inputApiKey == validApiKey)
+        {
+           
+
+            // If the API key matches, hide the modal and allow access to the API.
+            errorMessage = null;
+            Hide();
+            jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "apiKey", inputApiKey);
+            //Navigation.NavigateTo("/apidocs/true");
+            Navigation.NavigateTo($"{Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath}?isValid=true");
+        }
+        else
+        {
+            // If it does not match, show an error message.
+            errorMessage = "Invalid API key.";
+        }
+    }
+}

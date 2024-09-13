@@ -1,0 +1,50 @@
+﻿@typeparam T
+<div class="pt-1">
+
+    <h4>Models</h4>
+
+</div>
+<div class="accordion" id="accordionModels">
+    @foreach (var (model, index) in classModels!.Select((m, i) => (m, i + 1000)))
+    {
+        <div class="accordion-item accordion-item-spacing" style="background-color:whitesmoke">
+            <h2 class="accordion-header accordion-moduleinfo" id="heading-@index">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@index" aria-expanded="false" aria-controls="collapse-@index">
+                    <span style="font-weight:600"> @model!.GetType().Name</span>
+                </button>
+            </h2>
+            <div id="collapse-@index" class="accordion-collapse collapse" aria-labelledby="heading-@index" data-bs-parent="#accordionModels">
+                <div class="accordion-body">
+                    <ul class="list-group">
+                        @foreach (var description in GetPropertyDescriptions(model))
+                        {
+                            <li class="list-group-item small-text">@description</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<T>? classModels { get; set; } = new();
+
+    private IEnumerable<string> GetPropertyDescriptions(object model)
+    {
+        var descriptions = new List<string>();
+        var type = model.GetType();
+
+        foreach (var property in type.GetProperties())
+        {
+            var attribute = property.GetCustomAttribute<WiDocApiSchemaAttribute>();
+            if (attribute != null)
+            {
+                descriptions.Add($"{property.Name}: ({attribute.Description})");
+            }
+        }
+
+        return descriptions;
+    }
+}
