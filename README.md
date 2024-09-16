@@ -9,15 +9,67 @@
 - **API Key Integration**: API calls are secured using an API key stored in the `appsettings.json` file.
 - **Single Razor Component Page**: The interface is rendered as a single Razor component, making it easy to integrate.
 - **JSON-Based API Configuration**: API calls are defined in an `apisettings.json` file, enabling easy management of endpoints.
-
 ![Afbeelding](assets/WiDocApi.png)
 
-## Example of `apisettings.json`
+> #### download the WiDocApi library from my GitHub https://github.com/wvillevoye/WiDocApi/pkgs/nuget/WiDocApi_blazor
 
-Below is an example of how the API endpoints are configured in the `apisettings.json` file. Each entry includes information about the endpoint, such as its method, path, description, and caching behavior:
+## Create Endpoints in your blazor project:
+
+
+>  In the sample Blazor site, I have connected a database (persons). From this database, I have created an Endpoints directory with several endpoints for GET, POST, PUT, and DELETE operations. The same API key functionality can be used for these endpoints as well. See the example for more details.
+
+ **group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();**
+
+
+```csharp
+public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
+      {
+            var group = endpoints.MapGroup("/api").WithTags("GetPerson");
+            if (!string.IsNullOrEmpty(configuration["ApiSettings:ValidApiKey"]))
+            {
+                group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
+            }
+            group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
+            {
+                var _person = await dbContext.Persons.SingleOrDefaultAsync(x=>x.PersonID.Equals(SearchById));
+                if (_person == null)
+                {
+                    return Results.NotFound("Person not found.");
+                }
+                return Results.Ok(_person);
+            }).WithName("SearchById").WithOpenApi();
+            etc...
+           
+```
+
+
+### Create in your blazor a new component and add the following code:
 
 
 
+```razor
+@page "/apidocs"
+@rendermode InteractiveServer
+<WiDocApi_Blazor.Apidocs T="@object" classModels="@modelList" jsonFilePath="@filePath" />
+
+@code {
+    private List<object> modelList = new();
+    private string filePath = "ApiEndpoints.json";
+    protected override void OnInitialized()
+    {
+        // Initialize your models and add them to the list
+        modelList.Add(new Models.Person());
+        
+    }
+}
+```
+
+## Example of `ApiEndpoints.json`
+
+Below is an example of how the API endpoints are configured in the `ApiEndpoints.json` file. Each entry includes information about the endpoint, such as its method, path, description, and caching behavior:
+
+- Store this file under your `wwwroot` directory.
+- The baseUrl property determines the base URL for API calls. It checks if a value is provided in the appsettings.json configuration file under "ApiSettings:BaseUrl". If the configuration is empty or missing, it defaults to the current base URI of the application, removing any trailing slashes.
 
 ```json
 [
@@ -72,10 +124,50 @@ Below is an example of how the API endpoints are configured in the `apisettings.
 ]
 ```
 ## The appsettings.json file
+The appsettings.json file is used to store the API key for the application. The API key is stored under the "ApiSettings:ValidApiKey" key. The key is used to validate API calls made to the application.
+
+**If no ApiSettings value is provided, the authorize button will not be visible.**
 ```json
 {
   "ApiSettings": {
     "ValidApiKey": "test"
   }
 }
+```
+## WiDocApiSchemaAttribute 
+The WiDocApiSchemaAttribute is a custom attribute that can be applied to class properties. It allows you to provide a description for each property, which can be used in API documentation or other contexts where property metadata is needed.
+
+```csharp
+[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+public sealed class WiDocApiSchemaAttribute : Attribute
+{
+    public string Description { get; }
+
+    public WiDocApiSchemaAttribute(string description)
+    {
+        Description = description;
+    }
+}
+```
+- Usage: The attribute is applied to properties to provide a description, which is stored in the Description property.
+- Parameters: The constructor takes a string description parameter that specifies the description for the annotated property.
+
+ Constraints:
+- The attribute can only be used on properties (AttributeTargets.Property).
+- It cannot be inherited or applied multiple times on the same property (Inherited = false, AllowMultiple = false).
+
+ This attribute helps document class properties for use in APIs or UI components.
+
+  **WiDocApiSchemaAttribute Example**
+```csharp
+  public partial class Person
+{
+    [Key]
+    [WiDocApiSchema("Person ID for this person")]
+    public int PersonID { get; set; }
+
+    [StringLength(50)]
+    [WiDocApiSchema("First name of the person")]
+    public string FirstName { get; set; }
+    etc...
 ```
