@@ -10,7 +10,7 @@
 - **Single Razor Component Page**: The interface is rendered as a single Razor component, making it easy to integrate.
 - **JSON-Based API Configuration**: API calls are defined in an `apisettings.json` file, enabling easy management of endpoints.
 
-![Afbeelding](WiDocApi.png)
+![Afbeelding](assets/WiDocApi.png)
 
 ## Example of `apisettings.json`
 
