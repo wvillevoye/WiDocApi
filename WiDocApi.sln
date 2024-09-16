@@ -13,11 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\..\..\Temp\WiDocApi.png = ..\..\..\Temp\WiDocApi.png
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{F41D3D26-4CB3-4C28-8D38-1CB353DADC07}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Temp\WiDocApi.png = ..\..\..\Temp\WiDocApi.png
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,9 +30,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{F41D3D26-4CB3-4C28-8D38-1CB353DADC07} = {E94E6BDE-7AF3-4588-B4F8-87DED3A76BAA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5B23FFCB-F61B-49ED-B2FC-B981B59CFFD2}
