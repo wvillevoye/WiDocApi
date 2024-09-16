@@ -14,6 +14,10 @@
 
 Below is an example of how the API endpoints are configured in the `apisettings.json` file. Each entry includes information about the endpoint, such as its method, path, description, and caching behavior:
 
+
+![Alt-tekst](assets/WiDocApi.png)
+
+
 ```json
 [
   {
