@@ -11,4 +11,8 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         public string? GroupName { get; set; }
         public List<ApiEndpoint>? Endpoints { get; set; }
     }
+    public static class AddWiDocApiEndpoints
+    {
+        public static List<EndpointInfo> WiDocApiList = [];
+    }
 }

@@ -18,6 +18,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
         {
             try
             {
+
                 var urlGetApiCalls = $"{baseUrl}/{jsonFilePath}";
                 var response = await _http.GetAsync(urlGetApiCalls);
                 if (response.IsSuccessStatusCode)

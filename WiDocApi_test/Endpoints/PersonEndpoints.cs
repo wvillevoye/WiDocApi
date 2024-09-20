@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_test.Models;
 
 namespace WiDocApi_test.Endpoints
@@ -7,12 +8,13 @@ namespace WiDocApi_test.Endpoints
     public static class PersonEndpoints
     {
     
+    
+
       public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
       {
-           
-            var group = endpoints.MapGroup("/api")
+            var baseurlApi = "api/";
+            var group = endpoints.MapGroup(baseurlApi)
                         .WithTags("GetPerson");
-
 
             if (!string.IsNullOrEmpty(configuration["ApiSettings:ValidApiKey"]))
             {
@@ -28,10 +30,10 @@ namespace WiDocApi_test.Endpoints
                 {
                     return Results.NotFound("Person not found.");
                 }
-
                 return Results.Ok(_person);
             }).WithName("SearchById").WithOpenApi();
-           
+            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 1, Group = "GetPerson", Path = $"{baseurlApi}Person/{{SearchById}}", Description = "Search person by ID", Method = WiDocApiHttpMethod.GET, RequiresInput = true, CacheDurationMinutes = 10 });
+
             group.MapGet("/Person/search/{SearchStartWithLastName}", async (string SearchStartWithLastName, SamplePersonsContext dbContext) =>
             {
                 var _persons = await dbContext.Persons.Where(x=>x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
@@ -40,11 +42,10 @@ namespace WiDocApi_test.Endpoints
                 {
                     return Results.NotFound("Persons not found.");
                 }
-
-              
                 return Results.Ok(_persons);
             }).WithName("SearchStartWithLastName").WithOpenApi();
-            
+            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 2, Group = "GetPerson", Path = $"{baseurlApi}Person/search/{{SearchStartWithLastName}}", Description = "Search person by last name starting with", Method = WiDocApiHttpMethod.GET, RequiresInput = true, CacheDurationMinutes = 10 });
+
             group.MapPost("/Person", async (Person newPerson, SamplePersonsContext dbContext) =>
             {
                 // Add the new person to the database
@@ -54,6 +55,7 @@ namespace WiDocApi_test.Endpoints
                 // Return the created person with a 201 status code
                 return Results.Created($"/Person/{newPerson.PersonID}", newPerson);
             }).WithName("CreatePerson").WithOpenApi();
+            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 3,  Group = "RestPerson", Path = $"{baseurlApi}Person", Description = "Create a new person", Method = WiDocApiHttpMethod.POST, RequiresInput = true, CacheDurationMinutes = 0 });
 
             group.MapPut("/Person/{ById}", async (int ById, Person updatedPerson, SamplePersonsContext dbContext) =>
             {
@@ -93,8 +95,7 @@ namespace WiDocApi_test.Endpoints
                 // Return NoContent to indicate successful update
                 return Results.Ok("person is updated successfully.");
             }).WithName("UpdatePerson").WithOpenApi();
-
-
+            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 4, Group = "RestPerson", Path = $"{baseurlApi}Person/{{ById}}", Description = "Update a person by ID", Method = WiDocApiHttpMethod.PUT, RequiresInput = true, CacheDurationMinutes = 0 });
 
             group.MapDelete("/Person/{ById}", async (int ById, SamplePersonsContext dbContext) =>
             {
@@ -113,6 +114,9 @@ namespace WiDocApi_test.Endpoints
                 // Return NoContent to indicate successful deletion
                 return Results.NoContent();
             }).WithName("DeletePerson").WithOpenApi();
+            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 5,  Group = "RestPerson", Path = $"{baseurlApi}Person/{{ById}}", Description = "Delete a person by ID", Method = WiDocApiHttpMethod.DELETE, RequiresInput = true, CacheDurationMinutes = 0 });
+            
+        
         }
     }
 }
