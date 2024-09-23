@@ -20,6 +20,10 @@
  </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="WiDocApi\Helpers\MappingEndpoints.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="README.md" />
   </ItemGroup>
 

@@ -6,7 +6,7 @@
 @inject HttpMethodClassMapper HttpMethodClassMapper
 @inject IJSRuntime jsRuntime
 @inject SessionStorageService sessionStorageService
-@inject MappingEndpoints mappingEndpoints
+
 
 
         <ApiKeyModal @ref="apiKeyModal" />
@@ -82,7 +82,7 @@
     private List<ApiEndpoint> Endpoints { get; set; } = new();
     private bool isLoading = false;
 
-    public bool IsValidApiKeyConfigured()
+    private bool IsValidApiKeyConfigured()
     {
         var apiKey = Configuration["ApiSettings:ValidApiKey"];
         // Check if the value exists and is not null or empty
@@ -122,23 +122,21 @@
 
 
         var endpointInfos = RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList;
-        // if (RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList.Count >= 1)
-        // {
-         Endpoints = mappingEndpoints.MapEndpointInfoListToApiEndpointList(endpointInfos.ToList());
-        // }
-        // else
-        // {
-        //     var resultend = await loadEndpoints.LoadEndpointsFromJsonFile(baseUrl, jsonFilePath).ConfigureAwait(false);
-        //     Endpoints = resultend.endpoints;
-        //     readErrorJson = resultend.messages;
-        // }
-        groupedEndpoints = Endpoints.GroupBy(e => e.Group)
-                                           .Select(g => new GroupedApiEndpoints
+        if (RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList.Count >= 1)
+        {
+         Endpoints = endpointInfos.ToList();
+         }
+        else
+        {
+            var resultend = await loadEndpoints.LoadEndpointsFromJsonFile(baseUrl, jsonFilePath).ConfigureAwait(false);
+            Endpoints = resultend.endpoints;
+            readErrorJson = resultend.messages;
+        }
+        groupedEndpoints = Endpoints.GroupBy(e => e.Group).Select(g => new GroupedApiEndpoints
                                                {
                                                    GroupName = g.Key,
                                                    Endpoints = g.ToList()
-                                               })
-                                           .ToList();
+                                               }).ToList();
  
         foreach (var endpoint in Endpoints)
         {
@@ -187,7 +185,7 @@
     {
        
         var sb = new StringBuilder();
-        sb.Append($"curl -X '{endpoint.Method}' \n");
+        sb.Append($"curl -X '{endpoint.Method.ToString()}' \n");
         sb.Append($"'{endpoint.ApiRequest}' \n");
         sb.Append($"-H 'Content-Type: application/json' \n");
         if (IsValidApiKeyConfigured())
@@ -195,29 +193,13 @@
             string apiKey = Configuration["ApiSettings:ValidApiKey"]!.ToString();
             sb.Append($"-H 'X-Api-Key: {apiKey}' \n");  
         }
-        if(endpoint.Method == "POST" || endpoint.Method == "PUT" || endpoint.Method == "PATCH")
+        if(endpoint.Method.ToString() == "POST" || endpoint.Method.ToString() == "PUT" || endpoint.Method.ToString() == "PATCH")
         {
             sb.Append($"-d '{endpoint.Payload}'");
         }
         return sb.ToString();
     }
 
-    private IEnumerable<string> GetPropertyDescriptions(object model)
-    {
-        var descriptions = new List<string>();
-        var type = model.GetType();
-
-        foreach (var property in type.GetProperties())
-        {
-            var attribute = property.GetCustomAttribute<WiDocApiSchemaAttribute>();
-            if (attribute != null)
-            {
-                descriptions.Add($"{property.Name}: ({attribute.Description})");
-            }
-        }
-
-        return descriptions;
-    }
 
     private List<string> ExtractParametersFromPath(string path)
     {

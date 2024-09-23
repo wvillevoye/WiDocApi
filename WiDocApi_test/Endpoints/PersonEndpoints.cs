@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_test.Models;
 
@@ -9,15 +8,13 @@ namespace WiDocApi_test.Endpoints
 {
     public static class PersonEndpoints
     {
-    
-    
-
       public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
       {
             var baseurlApi = "api/";
             var group = endpoints.MapGroup(baseurlApi)
-                        .WithTags("GetPerson");
+                        .WithTags("Persons");
 
+           
             if (!string.IsNullOrEmpty(configuration["ApiSettings:ValidApiKey"]))
             {
                 group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
@@ -38,7 +35,6 @@ namespace WiDocApi_test.Endpoints
                 return Results.Ok(_person);
             }).WithName("SearchById").WithOpenApi()
              .AddWiDocApiEndpoints(new EndpointInfo { 
-          
              Group = "GetPerson",
              Description = "Search person by ID",
              CacheDurationMinutes = 10,
@@ -53,14 +49,16 @@ namespace WiDocApi_test.Endpoints
                     return Results.NotFound("Persons not found.");
                 }
                 return Results.Ok(_persons);
-            }).WithName("SearchStartWithLastName").WithOpenApi()
-             .AddWiDocApiEndpoints(new EndpointInfo
+            })
+            .WithName("SearchStartWithLastName")
+            .WithOpenApi()
+            .AddWiDocApiEndpoints(new EndpointInfo
              {
-              
                  Group = "GetPerson",
                  Description = "Search person by last name starting with",
                  CacheDurationMinutes = 10,
-             });
+                 //Active = false,
+            });
            
             group.MapPost("/Person", async (Person newPerson, SamplePersonsContext dbContext) =>
             {
@@ -73,7 +71,6 @@ namespace WiDocApi_test.Endpoints
             }).WithName("CreatePerson").WithOpenApi()
             .AddWiDocApiEndpoints( new EndpointInfo
             {
-               
                 Group = "RestPerson",
                 Description = "Create a new person",
                 RequiresInput = false,

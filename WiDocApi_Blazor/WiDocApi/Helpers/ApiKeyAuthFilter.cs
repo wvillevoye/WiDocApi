@@ -33,5 +33,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
             return result ?? Results.Problem("An unexpected error occurred.");
         }
     }
+
+  
 }
 

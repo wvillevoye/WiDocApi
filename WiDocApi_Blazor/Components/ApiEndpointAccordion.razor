@@ -12,11 +12,11 @@
     @foreach (var endpoint in Endpoints)
     {
         <div class="accordion-item accordion-item-spacing" style="background-color:whitesmoke" @key="endpoint.Id">
-            <h3 class="accordion-header @HttpMethodClassMapper.GetClasses(endpoint.Method!).headerClass" id="heading-@endpoint.Id">
+            <h3 class="accordion-header @HttpMethodClassMapper.GetClasses(endpoint.Method.ToString()!).headerClass" id="heading-@endpoint.Id">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@endpoint.Id" aria-expanded="false" aria-controls="collapse-@endpoint.Id">
                     <div class="row mb-0">
                         <div class="col-sm-auto">
-                            <span class="@HttpMethodClassMapper.GetClasses(endpoint.Method!).buttonClass">@endpoint.Method</span>
+                            <span class="@HttpMethodClassMapper.GetClasses(endpoint.Method.ToString()!).buttonClass">@endpoint.Method</span>
                         </div>
                         <div class="col-sm-auto">
                             <span class="mb-0 small-text-path">@endpoint.Path</span>
@@ -62,12 +62,12 @@
                             </dl>
                         }
 
-                        @if (endpoint.Method == "POST" || endpoint.Method == "PUT" || endpoint.Method == "PATCH")
+                        @if (endpoint.Method.ToString() == "POST" || endpoint.Method.ToString() == "PUT" || endpoint.Method.ToString() == "PATCH")
                         {
                             <textarea @bind="endpoint.Payload" placeholder="Enter JSON payload..." class="form-control auto-resize mb-2"></textarea>
                         }
 
-                        <button type="button" class="btn btn-sm mb-2 @HttpMethodClassMapper.GetClasses(endpoint.Method!).buttonClass" @onclick="() => StartApi(endpoint)">
+                        <button type="button" class="btn btn-sm mb-2 @HttpMethodClassMapper.GetClasses(endpoint.Method.ToString()!).buttonClass" @onclick="() => StartApi(endpoint)">
                             <i class="fas fa-play-circle"></i> Try It Out
                         </button>
 

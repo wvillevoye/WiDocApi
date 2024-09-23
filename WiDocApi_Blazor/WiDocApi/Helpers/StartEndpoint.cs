@@ -41,7 +41,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                     requestMessage.Headers.Add("X-Api-Key", apiKey);
                 }
 
-                if (IsContentRequired(endpoint.Method.ToString()!))
+                if (IsContentRequired(endpoint.Method.ToString().ToString()!))
                 {
                     var jsonPayload = endpoint.Payload ?? string.Empty;
                     requestMessage.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");

@@ -30,7 +30,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                 Group = endpointInfo.Group,
                 Path = endpointInfo.Path,
                 Description = endpointInfo.Description,
-                Method = endpointInfo.Method.ToString(), // Convert enum to string
+                Method = endpointInfo.Method, // Convert enum to string
                 RequiresInput = endpointInfo.RequiresInput,
                 CacheDurationMinutes = endpointInfo.CacheDurationMinutes,
 

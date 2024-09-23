@@ -7,7 +7,7 @@ public static class RouteHandlerBuilderExtensions
       public static class WiDocApiStorage
     {
         // Correct initialization of the list
-        public static List<EndpointInfo> WiDocApiList = new List<EndpointInfo>();
+        public static List<ApiEndpoint> WiDocApiList = new List<ApiEndpoint>();
 
         private static int _endpointIdCounter = 1; // Start the counter from 1
 
@@ -26,19 +26,16 @@ public static class RouteHandlerBuilderExtensions
         builder.Add(endpointBuilder =>
         {
             // Create a new instance for each endpoint to avoid reference duplication
-            var currentEndpointInfo = new EndpointInfo
+            var currentEndpointInfo = new ApiEndpoint
             {
                 Id = endpointInfo.Id == 0? WiDocApiStorage.GetNextEndpointId(): endpointInfo.Id,
                 Group = endpointInfo.Group,
                 Description = endpointInfo.Description,
                 RequiresInput = endpointInfo.RequiresInput,
-                CacheDurationMinutes = endpointInfo.CacheDurationMinutes
+                CacheDurationMinutes = endpointInfo.CacheDurationMinutes,
+                Active = endpointInfo.Active
             };
 
-            // Check if the endpoint already exists in the list
-          
-
-            // Capture the HTTP method from the metadata
             var httpMethodMetadata = endpointBuilder.Metadata.OfType<HttpMethodMetadata>().FirstOrDefault();
             if (httpMethodMetadata != null)
             {
@@ -57,14 +54,11 @@ public static class RouteHandlerBuilderExtensions
             }
             if (!WiDocApiStorage.WiDocApiList.Any(e => e.Method == currentEndpointInfo.Method && e.Path == currentEndpointInfo.Path))
             {
-                WiDocApiStorage.WiDocApiList.Add(currentEndpointInfo);
+                if (currentEndpointInfo.Active)
+                {
+                    WiDocApiStorage.WiDocApiList.Add(currentEndpointInfo);
+                }
             }
-
-
-
-
-            // Add the populated EndpointInfo to the WiDocApi list
-            //WiDocApiStorage.WiDocApiList.Add(currentEndpointInfo) ;
         });
 
         return builder;

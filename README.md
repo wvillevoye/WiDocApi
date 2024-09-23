@@ -63,8 +63,45 @@ public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfi
     }
 }
 ```
+## Using your own endpoints in your Blazor App?:
+**Then you can use this:**
+```csharp
+  
+ group.MapGet("/Person/search/{SearchStartWithLastName}/{city}", async (string SearchStartWithLastName, string city, SamplePersonsContext dbContext) =>
+      {
+       var _persons = await dbContext.Persons.Where(x => x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
 
-## Example of `ApiEndpoints.json`
+         if (_persons == null)
+          {
+              return Results.NotFound("Persons not found.");
+          }
+          return Results.Ok(_persons);
+        }).WithName("SearchStartWithLastName")
+          .WithOpenApi()
+          .AddWiDocApiEndpoints(new EndpointInfo
+             {
+                 Group = "GetPerson",
+                 Description = "Search person by last name starting with",
+                 CacheDurationMinutes = 10,
+             });
+           
+```
+The endpoint class look like this:
+```csharp
+ public class EndpointInfo
+    {
+        public int Id { get; set; }
+        public string Group { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool RequiresInput { get; set; } = true;
+        [Range(0, int.MaxValue, ErrorMessage = "Cache duration must be a non-negative value.")]
+        public int CacheDurationMinutes { get; set; } = 0;
+        public bool Active { get; set; } = true;
+    }
+```
+
+**other use this:**
+### Example of `ApiEndpoints.json`
 
 Below is an example of how the API endpoints are configured in the `ApiEndpoints.json` file. Each entry includes information about the endpoint, such as its method, path, description, and caching behavior:
 
