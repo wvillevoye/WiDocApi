@@ -140,7 +140,7 @@ namespace WiDocApi_test.Endpoints
              .AddWiDocApiEndpoints( new EndpointInfo
              {
                  Group = "RestPerson",
-                 Description = "Delete a person by ID",
+                 Description = "Delete a person by ID"
              });
 
 
