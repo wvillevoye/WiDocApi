@@ -12,7 +12,7 @@ namespace WiDocApi_Blazor.WiDocApi.Models
 
         public string BaseUrl { get; set; } = string.Empty;
 
-        public string Group { get; set; } = string.Empty;
+        public string Group { get; set; } = "Group";
 
         // Consider adding a more descriptive name if the 'Path' is a relative endpoint path.
         public string Path { get; set; } = string.Empty;
@@ -22,10 +22,10 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         // Use an enum instead of a string to represent HTTP methods.
         public WiDocApiHttpMethod Method { get; set; }
 
-        public bool RequiresInput { get; set; }
+        public bool RequiresInput { get; set; } = true;
 
         [Range(0, int.MaxValue, ErrorMessage = "Cache duration must be a non-negative value.")]
-        public int CacheDurationMinutes { get; set; }
+        public int CacheDurationMinutes { get; set; } = 0;
         public bool Active { get; set; } = true;
 
 
@@ -40,7 +40,8 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         DELETE,
         PATCH,
         HEAD,
-        OPTIONS
+        OPTIONS,
+        UNKNOWN
     }
 
 }

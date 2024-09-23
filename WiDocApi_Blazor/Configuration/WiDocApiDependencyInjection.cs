@@ -20,6 +20,7 @@ namespace WiDocApi_Blazor.Configuration.WiDocApi
             services.AddScoped<LoadEndpoints>();
             services.AddScoped<HttpMethodClassMapper>();
             services.AddScoped<SessionStorageService>();
+            services.AddScoped<MappingEndpoints>();
         }
 
     }

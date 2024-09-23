@@ -6,7 +6,7 @@
 @inject HttpMethodClassMapper HttpMethodClassMapper
 @inject IJSRuntime jsRuntime
 @inject SessionStorageService sessionStorageService
-
+@inject MappingEndpoints mappingEndpoints
 
 
         <ApiKeyModal @ref="apiKeyModal" />
@@ -119,17 +119,19 @@
         {
             checkApiKey = true;
         }
-    
-        if (AddWiDocApiEndpoints.WiDocApiList.Count >= 1)
-        {
-            Endpoints = MapEndpointInfoListToApiEndpointList(AddWiDocApiEndpoints.WiDocApiList);
-        }
-        else
-        {
-            var resultend = await loadEndpoints.LoadEndpointsFromJsonFile(baseUrl, jsonFilePath).ConfigureAwait(false);
-            Endpoints = resultend.endpoints;
-            readErrorJson = resultend.messages;
-        }
+
+
+        var endpointInfos = RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList;
+        // if (RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList.Count >= 1)
+        // {
+         Endpoints = mappingEndpoints.MapEndpointInfoListToApiEndpointList(endpointInfos.ToList());
+        // }
+        // else
+        // {
+        //     var resultend = await loadEndpoints.LoadEndpointsFromJsonFile(baseUrl, jsonFilePath).ConfigureAwait(false);
+        //     Endpoints = resultend.endpoints;
+        //     readErrorJson = resultend.messages;
+        // }
         groupedEndpoints = Endpoints.GroupBy(e => e.Group)
                                            .Select(g => new GroupedApiEndpoints
                                                {
@@ -145,42 +147,7 @@
 
     }
 
-    public List<ApiEndpoint> MapEndpointInfoListToApiEndpointList(List<EndpointInfo> endpointInfos)
-    {
-        var apiEndpoints = new List<ApiEndpoint>();
-
-        foreach (var endpointInfo in endpointInfos)
-        {
-            // Map each EndpointInfo to an ApiEndpoint and add to the list
-            apiEndpoints.Add(MapEndpointInfoToApiEndpoint(endpointInfo));
-        }
-
-        return apiEndpoints;
-    }
-    public ApiEndpoint MapEndpointInfoToApiEndpoint(EndpointInfo endpointInfo)
-    {
-        return new ApiEndpoint
-            {
-                Id = endpointInfo.Id,
-                BaseUrl = endpointInfo.BaseUrl,
-                Group = endpointInfo.Group,
-                Path = endpointInfo.Path,
-                Description = endpointInfo.Description,
-                Method = endpointInfo.Method.ToString(), // Convert enum to string
-                RequiresInput = endpointInfo.RequiresInput,
-                CacheDurationMinutes = endpointInfo.CacheDurationMinutes,
-
-                // Additional properties in ApiEndpoint that are not in EndpointInfo
-                Payload = string.Empty,
-                ApiResponse = string.Empty,
-                IsLoading = false,
-                HasError = false,
-                ApiRequest = string.Empty,
-                Curl = string.Empty,
-                Active = true,
-                DynamicInputValues = new Dictionary<string, string>()
-            };
-    }
+   
 
     private async Task StartApi(ApiEndpoint endpoint)
     {

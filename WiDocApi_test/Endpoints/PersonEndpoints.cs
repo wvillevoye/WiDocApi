@@ -3,6 +3,8 @@ using System.Text.Json;
 using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_test.Models;
 
+
+
 namespace WiDocApi_test.Endpoints
 {
     public static class PersonEndpoints
@@ -20,10 +22,13 @@ namespace WiDocApi_test.Endpoints
             {
                 group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
             }
-            
-            
-            group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
+
+           
+
+           group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
             {
+               
+                
                 var _person = await dbContext.Persons.SingleOrDefaultAsync(x=>x.PersonID.Equals(SearchById));
 
                 if (_person == null)
@@ -31,21 +36,32 @@ namespace WiDocApi_test.Endpoints
                     return Results.NotFound("Person not found.");
                 }
                 return Results.Ok(_person);
-            }).WithName("SearchById").WithOpenApi();
-            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 1, Group = "GetPerson", Path = $"{baseurlApi}Person/{{SearchById}}", Description = "Search person by ID", Method = WiDocApiHttpMethod.GET, RequiresInput = true, CacheDurationMinutes = 10 });
-
-            group.MapGet("/Person/search/{SearchStartWithLastName}", async (string SearchStartWithLastName, SamplePersonsContext dbContext) =>
+            }).WithName("SearchById").WithOpenApi()
+             .AddWiDocApiEndpoints(new EndpointInfo { 
+          
+             Group = "GetPerson",
+             Description = "Search person by ID",
+             CacheDurationMinutes = 10,
+            });
+           
+            group.MapGet("/Person/search/{SearchStartWithLastName}/{city}", async (string SearchStartWithLastName, string city, SamplePersonsContext dbContext) =>
             {
-                var _persons = await dbContext.Persons.Where(x=>x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
+                var _persons = await dbContext.Persons.Where(x => x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
 
                 if (_persons == null)
                 {
                     return Results.NotFound("Persons not found.");
                 }
                 return Results.Ok(_persons);
-            }).WithName("SearchStartWithLastName").WithOpenApi();
-            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 2, Group = "GetPerson", Path = $"{baseurlApi}Person/search/{{SearchStartWithLastName}}", Description = "Search person by last name starting with", Method = WiDocApiHttpMethod.GET, RequiresInput = true, CacheDurationMinutes = 10 });
-
+            }).WithName("SearchStartWithLastName").WithOpenApi()
+             .AddWiDocApiEndpoints(new EndpointInfo
+             {
+              
+                 Group = "GetPerson",
+                 Description = "Search person by last name starting with",
+                 CacheDurationMinutes = 10,
+             });
+           
             group.MapPost("/Person", async (Person newPerson, SamplePersonsContext dbContext) =>
             {
                 // Add the new person to the database
@@ -54,9 +70,15 @@ namespace WiDocApi_test.Endpoints
 
                 // Return the created person with a 201 status code
                 return Results.Created($"/Person/{newPerson.PersonID}", newPerson);
-            }).WithName("CreatePerson").WithOpenApi();
-            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 3,  Group = "RestPerson", Path = $"{baseurlApi}Person", Description = "Create a new person", Method = WiDocApiHttpMethod.POST, RequiresInput = true, CacheDurationMinutes = 0 });
-
+            }).WithName("CreatePerson").WithOpenApi()
+            .AddWiDocApiEndpoints( new EndpointInfo
+            {
+               
+                Group = "RestPerson",
+                Description = "Create a new person",
+                RequiresInput = false,
+            });
+          
             group.MapPut("/Person/{ById}", async (int ById, Person updatedPerson, SamplePersonsContext dbContext) =>
             {
                 // Find the person by ID
@@ -94,8 +116,12 @@ namespace WiDocApi_test.Endpoints
 
                 // Return NoContent to indicate successful update
                 return Results.Ok("person is updated successfully.");
-            }).WithName("UpdatePerson").WithOpenApi();
-            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 4, Group = "RestPerson", Path = $"{baseurlApi}Person/{{ById}}", Description = "Update a person by ID", Method = WiDocApiHttpMethod.PUT, RequiresInput = true, CacheDurationMinutes = 0 });
+            }).WithName("UpdatePerson").WithOpenApi()
+            .AddWiDocApiEndpoints( new EndpointInfo
+            {
+                Group = "RestPerson",
+                Description = "Update a person by ID",
+            });
 
             group.MapDelete("/Person/{ById}", async (int ById, SamplePersonsContext dbContext) =>
             {
@@ -113,10 +139,15 @@ namespace WiDocApi_test.Endpoints
 
                 // Return NoContent to indicate successful deletion
                 return Results.NoContent();
-            }).WithName("DeletePerson").WithOpenApi();
-            AddWiDocApiEndpoints.WiDocApiList.Add(new EndpointInfo { Id = 5,  Group = "RestPerson", Path = $"{baseurlApi}Person/{{ById}}", Description = "Delete a person by ID", Method = WiDocApiHttpMethod.DELETE, RequiresInput = true, CacheDurationMinutes = 0 });
-            
-        
+            }).WithName("DeletePerson").WithOpenApi()
+             .AddWiDocApiEndpoints( new EndpointInfo
+             {
+                 Group = "RestPerson",
+                 Description = "Delete a person by ID",
+             });
+
+
+
         }
     }
 }
