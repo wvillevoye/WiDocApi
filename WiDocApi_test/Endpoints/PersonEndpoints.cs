@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_test.Models;
 
@@ -24,8 +25,6 @@ namespace WiDocApi_test.Endpoints
 
            group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
             {
-               
-                
                 var _person = await dbContext.Persons.SingleOrDefaultAsync(x=>x.PersonID.Equals(SearchById));
 
                 if (_person == null)
@@ -35,9 +34,9 @@ namespace WiDocApi_test.Endpoints
                 return Results.Ok(_person);
             }).WithName("SearchById").WithOpenApi()
              .AddWiDocApiEndpoints(new EndpointInfo { 
-             Group = "GetPerson",
-             Description = "Search person by ID",
-             CacheDurationMinutes = 10,
+                 Group = "GetPerson",
+                 Description = "Search person by ID",
+                 CacheDurationMinutes = 10,
             });
            
             group.MapGet("/Person/search/{SearchStartWithLastName}/{city}", async (string SearchStartWithLastName, string city, SamplePersonsContext dbContext) =>

@@ -47,6 +47,8 @@ public static class RouteHandlerBuilderExtensions
             if (endpointBuilder is RouteEndpointBuilder routeEndpointBuilder)
             {
                 currentEndpointInfo.Path = $"{routeEndpointBuilder.RoutePattern.RawText}";
+
+               
             }
             else
             {
