@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using WiDocApi_Blazor.WiDocApi.Services;
 
 namespace WiDocApi_Blazor.WiDocApi.Helpers
 {
@@ -14,12 +15,14 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
     {
         private readonly IConfiguration _configuration;
         private readonly HttpClient _http;
+        private readonly SessionStorageService _sessionService;
         private readonly ConcurrentDictionary<string, CachedApiResponse> _apiResponseCache = new ConcurrentDictionary<string, CachedApiResponse>();
 
-        public StartEndpoint(IConfiguration configuration, HttpClient http)
+        public StartEndpoint(IConfiguration configuration, HttpClient http, SessionStorageService sessionService)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _http = http ?? throw new ArgumentNullException(nameof(http));
+            _sessionService =  sessionService ?? throw new ArgumentNullException(nameof(sessionService)); ;
         }
 
         public async Task TryEndpoint(ApiEndpoint endpoint, string baseUrl)
@@ -36,6 +39,16 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                 using var requestMessage = new HttpRequestMessage(HttpMethod.Parse(endpoint.Method.ToString()!), new Uri(apiRequest));
 
                 var apiKey = _configuration["ApiSettings:ValidApiKey"];
+
+                if (await _sessionService.ApiKeyExists())
+                {
+                    apiKey = await _sessionService.GetFromSessionStorage("apiKey");
+                }
+
+
+
+
+
                 if (!string.IsNullOrEmpty(apiKey))
                 {
                     requestMessage.Headers.Add("X-Api-Key", apiKey);

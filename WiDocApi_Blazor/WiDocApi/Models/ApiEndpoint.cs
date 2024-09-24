@@ -37,6 +37,10 @@ namespace WiDocApi_Blazor.WiDocApi.Models
 
         public string? Curl { get; set; }
 
+
+        public List<string> ParameterTypes = [];
+
+
         private Dictionary<string, string> _dynamicInputValues = new();
 
         public Dictionary<string, string> DynamicInputValues

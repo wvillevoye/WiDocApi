@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using WiDocApi_Blazor.WiDocApi.Models;
 
@@ -33,7 +33,8 @@ public static class RouteHandlerBuilderExtensions
                 Description = endpointInfo.Description,
                 RequiresInput = endpointInfo.RequiresInput,
                 CacheDurationMinutes = endpointInfo.CacheDurationMinutes,
-                Active = endpointInfo.Active
+                Active = endpointInfo.Active,
+                ParameterTypes = new List<string>() // Initialize the list
             };
 
             var httpMethodMetadata = endpointBuilder.Metadata.OfType<HttpMethodMetadata>().FirstOrDefault();

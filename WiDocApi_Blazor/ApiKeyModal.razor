@@ -2,6 +2,7 @@
 @inject IConfiguration Configuration
 @inject IJSRuntime jsRuntime
 @inject NavigationManager Navigation
+@inject SessionStorageService SessionService;
 
 @if (isVisible)
 {
@@ -36,7 +37,7 @@
 
 
 @code {
-   
+
     private string inputApiKey = string.Empty;
     private bool isVisible = false;
     private string? errorMessage = null;
@@ -54,19 +55,21 @@
         StateHasChanged();
     }
 
-    private void ValidateApiKey()
+    private async void ValidateApiKey()
     {
         var validApiKey = Configuration["ApiSettings:ValidApiKey"];
         if (inputApiKey == validApiKey)
         {
-           
 
+            //await jsRuntime.InvokeVoidAsync("setCookie", "apiKey", validApiKey, 1);
             // If the API key matches, hide the modal and allow access to the API.
             errorMessage = null;
             Hide();
-            jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "apiKey", inputApiKey);
+           await SessionService.SetInSessionStorage("apiKey", validApiKey);
+            
             //Navigation.NavigateTo("/apidocs/true");
-            Navigation.NavigateTo($"{Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath}?isValid=true");
+            //Navigation.NavigateTo($"{Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath}?isValid=true");
+            Navigation.NavigateTo($"{Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath}");
         }
         else
         {
@@ -74,4 +77,5 @@
             errorMessage = "Invalid API key.";
         }
     }
+  
 }
