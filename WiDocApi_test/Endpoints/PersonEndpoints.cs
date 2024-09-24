@@ -2,43 +2,43 @@
 using Microsoft.EntityFrameworkCore;
 using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_test.Models;
-
-
+using Microsoft.AspNetCore.Http;
+using WiDocApi_Blazor.WiDocApi.Helpers;
 
 namespace WiDocApi_test.Endpoints
 {
     public static class PersonEndpoints
     {
-      public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
-      {
+        public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
+        {
             var baseurlApi = "api/";
             var group = endpoints.MapGroup(baseurlApi)
-                        .WithTags("Persons");
+                                  .WithTags("Persons");
 
-           
             if (!string.IsNullOrEmpty(configuration["ApiSettings:ValidApiKey"]))
             {
                 group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
             }
 
-           
-
-           group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
+            group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
             {
-                var _person = await dbContext.Persons.SingleOrDefaultAsync(x=>x.PersonID.Equals(SearchById));
+                var _person = await dbContext.Persons.FindAsync(SearchById);
 
                 if (_person == null)
                 {
                     return Results.NotFound("Person not found.");
                 }
                 return Results.Ok(_person);
-            }).WithName("SearchById").WithOpenApi()
-             .AddWiDocApiEndpoints(new EndpointInfo { 
-                 Group = "GetPerson",
-                 Description = "Search person by ID",
-                 CacheDurationMinutes = 10,
+            })
+            .WithName("SearchById")
+            .WithOpenApi()
+            .AddWiDocApiEndpoints(new EndpointInfo
+            {
+                Group = "GetPerson",
+                Description = "Search person by ID",
+                CacheDurationMinutes = 10,
             });
-           
+
             group.MapGet("/Person/search/{SearchStartWithLastName}/{city}", async (string SearchStartWithLastName, string city, SamplePersonsContext dbContext) =>
             {
                 var _persons = await dbContext.Persons.Where(x => x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
@@ -52,33 +52,31 @@ namespace WiDocApi_test.Endpoints
             .WithName("SearchStartWithLastName")
             .WithOpenApi()
             .AddWiDocApiEndpoints(new EndpointInfo
-             {
-                 Group = "GetPerson",
-                 Description = "Search person by last name starting with",
-                 CacheDurationMinutes = 10,
-                 //Active = false,
+            {
+                Group = "GetPerson",
+                Description = "Search person by last name starting with",
+                CacheDurationMinutes = 10,
             });
-           
+
             group.MapPost("/Person", async (Person newPerson, SamplePersonsContext dbContext) =>
             {
-                // Add the new person to the database
                 dbContext.Persons.Add(newPerson);
                 await dbContext.SaveChangesAsync();
 
-                // Return the created person with a 201 status code
                 return Results.Created($"/Person/{newPerson.PersonID}", newPerson);
-            }).WithName("CreatePerson").WithOpenApi()
-            .AddWiDocApiEndpoints( new EndpointInfo
+            })
+            .WithName("CreatePerson")
+            .WithOpenApi()
+            .AddWiDocApiEndpoints(new EndpointInfo
             {
                 Group = "RestPerson",
                 Description = "Create a new person",
                 RequiresInput = false,
             });
-          
+
             group.MapPut("/Person/{ById}", async (int ById, Person updatedPerson, SamplePersonsContext dbContext) =>
             {
-                // Find the person by ID
-                var existingPerson = await dbContext.Persons.SingleOrDefaultAsync(x => x.PersonID == ById);
+                var existingPerson = await dbContext.Persons.FindAsync(ById);
 
                 if (existingPerson == null)
                 {
@@ -107,13 +105,13 @@ namespace WiDocApi_test.Endpoints
                 if (!string.IsNullOrEmpty(updatedPerson.ZipCode))
                     existingPerson.ZipCode = updatedPerson.ZipCode;
 
-                // Save changes to the database
                 await dbContext.SaveChangesAsync();
 
-                // Return NoContent to indicate successful update
-                return Results.Ok("person is updated successfully.");
-            }).WithName("UpdatePerson").WithOpenApi()
-            .AddWiDocApiEndpoints( new EndpointInfo
+                return Results.Ok("Person is updated successfully.");
+            })
+            .WithName("UpdatePerson")
+            .WithOpenApi()
+            .AddWiDocApiEndpoints(new EndpointInfo
             {
                 Group = "RestPerson",
                 Description = "Update a person by ID",
@@ -121,29 +119,31 @@ namespace WiDocApi_test.Endpoints
 
             group.MapDelete("/Person/{ById}", async (int ById, SamplePersonsContext dbContext) =>
             {
-                // Find the person by ID
-                var personToDelete = await dbContext.Persons.SingleOrDefaultAsync(x => x.PersonID == ById);
+                var personToDelete = await dbContext.Persons.FindAsync(ById);
 
                 if (personToDelete == null)
                 {
                     return Results.NotFound("Person not found.");
                 }
 
-                // Remove the person from the database
                 dbContext.Persons.Remove(personToDelete);
                 await dbContext.SaveChangesAsync();
 
-                // Return NoContent to indicate successful deletion
                 return Results.NoContent();
-            }).WithName("DeletePerson").WithOpenApi()
-             .AddWiDocApiEndpoints( new EndpointInfo
-             {
-                 Group = "RestPerson",
-                 Description = "Delete a person by ID"
-             });
+            })
+            .WithName("DeletePerson")
+            .WithOpenApi()
+            .AddWiDocApiEndpoints(new EndpointInfo
+            {
+                Group = "RestPerson",
+                Description = "Delete a person by ID",
+            });
 
-
-
+            // Now, inspect the parameters from the endpoint metadata
+       
         }
+
+    
+
     }
 }
