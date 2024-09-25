@@ -116,7 +116,7 @@ Below is an example of how the API endpoints are configured in the `ApiEndpoints
     "Group": "Group1",
     "Path": "/api/Person/{SearchById}",
     "Description": "Returns information about the person specified by Id.",
-    "Method": "GET",
+    "httpMethod": "GET",
     "RequiresInput": true,
     "CacheDurationMinutes": 10
   },
@@ -126,7 +126,7 @@ Below is an example of how the API endpoints are configured in the `ApiEndpoints
     "Group": "Group1",
     "Path": "/api/Person/search/{SearchStartWithLastName}",
     "Description": "Returns a list of persons starting with the specified last name.",
-    "Method": "GET",
+    "httpMethod": "GET",
     "RequiresInput": true,
     "CacheDurationMinutes": 10
   },
@@ -136,7 +136,7 @@ Below is an example of how the API endpoints are configured in the `ApiEndpoints
     "Group": "Group2",
     "Path": "/api/Person",
     "Description": "Adds a new person.",
-    "Method": "POST",
+    "httpMethod": "POST",
     "RequiresInput": false,
     "CacheDurationMinutes": 0
   },
@@ -146,7 +146,7 @@ Below is an example of how the API endpoints are configured in the `ApiEndpoints
     "Group": "Group2",
     "Path": "/api/Person/{ById}",
     "Description": "Updates a person's information.",
-    "Method": "PUT",
+    "httpMethod": "PUT",
     "RequiresInput": true
   },
   {
@@ -155,7 +155,7 @@ Below is an example of how the API endpoints are configured in the `ApiEndpoints
     "Group": "Group2",
     "Path": "/api/Person/{ById}",
     "Description": "Deletes a person.",
-    "Method": "DELETE",
+    "httpMethod": "DELETE",
     "RequiresInput": true
   }
 ]
