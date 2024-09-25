@@ -7,7 +7,7 @@
 @inject IJSRuntime jsRuntime
 @inject SessionStorageService sessionService
 @inject ApiStateService ApiState
-
+@inject ExtractParameters ExtractParameters
 
 
 
@@ -72,10 +72,7 @@
     public List<T>? classModels { get; set; } = new();
     [Parameter]
     public string jsonFilePath { get; set; } = "ApiEndpoints.json";
-
     private List<GroupedApiEndpoints> groupedEndpoints = new List<GroupedApiEndpoints>();
-
-
     private bool isValid { get; set; }
     private ApiKeyModal? apiKeyModal;
     private string baseUrl => string.IsNullOrEmpty(Configuration["ApiSettings:BaseUrl"])  ? Navigation.BaseUri.TrimEnd('/') : Configuration["ApiSettings:BaseUrl"]!.TrimEnd('/');
@@ -85,14 +82,9 @@
     private bool isLoading = false;
   
 
-
-
-
-
     private bool IsValidApiKeyConfigured()
     {
         var apiKey = Configuration["ApiSettings:ValidApiKey"];
-        // Check if the value exists and is not null or empty
         return !string.IsNullOrEmpty(apiKey);
     }
 
@@ -134,7 +126,9 @@
 
         foreach (var endpoint in Endpoints)
         {
-            InitializeDynamicInputValues(endpoint);
+           
+                ExtractParameters.InitializeDynamicInputValues(endpoint);
+            
         }
 
     }
@@ -165,7 +159,7 @@
         if (endpoint.RequiresInput)
         {
             // Controleer of alle vereiste inputwaarden zijn ingevuld
-            foreach (var param in ExtractParametersFromPath(endpoint.Path!))
+            foreach (var param in ExtractParameters.FromPath(endpoint.Path!))
             {
                 if (string.IsNullOrEmpty(endpoint.DynamicInputValues[param]))
                 {
@@ -177,60 +171,15 @@
         }
 
         await StartEndpoint.TryEndpoint(endpoint, baseUrl).ConfigureAwait(false);
-        endpoint.Curl = CreateCurl(endpoint);
+        endpoint.Curl = ExtractParameters.CreateCurl(endpoint, IsValidApiKeyConfigured(), Configuration["ApiSettings:ValidApiKey"]!.ToString());
        
         isLoading = false;
         
     }
     
-    private string CreateCurl(ApiEndpoint endpoint)
-    {
-       
-        var sb = new StringBuilder();
-        sb.Append($"curl -X '{endpoint.HttpMethod.ToString()}' \n");
-        sb.Append($"'{endpoint.ApiRequest}' \n");
-        sb.Append($"-H 'Content-Type: application/json' \n");
-        if (IsValidApiKeyConfigured())
-        {
-            string apiKey = Configuration["ApiSettings:ValidApiKey"]!.ToString();
-            sb.Append($"-H 'X-Api-Key: {apiKey}' \n");  
-        }
-        if (endpoint.HttpMethod.ToString() == "POST" || endpoint.HttpMethod.ToString() == "PUT" || endpoint.HttpMethod.ToString() == "PATCH")
-        {
-            sb.Append($"-d '{endpoint.Payload}'");
-        }
-        return sb.ToString();
-    }
+  
 
-
-    private List<string> ExtractParametersFromPath(string path)
-    {
-        var parameters = new List<string>();
-
-        // Gebruik een regex om parameters te vinden tussen accolades {}
-        var matches = System.Text.RegularExpressions.Regex.Matches(path, @"\{(.*?)\}");
-
-        foreach (var match in matches)
-        {
-            parameters.Add(match.ToString()!.Trim('{', '}'));
-        }
-
-        return parameters;
-    }
-
-    private void InitializeDynamicInputValues(ApiEndpoint endpoint)
-    {
-       
-        var parameters = ExtractParametersFromPath(endpoint.Path!);
-        foreach (var param in parameters)
-        {
-            // Voeg elke parameter toe aan de dictionary met een lege string als waarde
-            if (!endpoint.DynamicInputValues.ContainsKey(param))
-            {
-                endpoint.DynamicInputValues[param] = string.Empty;
-            }
-        }
-    }
+    
 
 }
 

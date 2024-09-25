@@ -11,6 +11,7 @@ using WiDocApi_Blazor.WiDocApi.Services;
 
 namespace WiDocApi_Blazor.WiDocApi.Helpers
 {
+    
     public class StartEndpoint
     {
         private readonly IConfiguration _configuration;
@@ -45,10 +46,6 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                     apiKey = await _sessionService.GetFromSessionStorage("apiKey");
                 }
 
-
-
-
-
                 if (!string.IsNullOrEmpty(apiKey))
                 {
                     requestMessage.Headers.Add("X-Api-Key", apiKey);
@@ -60,10 +57,9 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                     requestMessage.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                 }
 
-                var stopwatch = Stopwatch.StartNew(); // Measure API time
-
+                //var stopwatch = Stopwatch.StartNew(); // Measure API time
                 using var response = await _http.SendAsync(requestMessage).ConfigureAwait(false);
-                stopwatch.Stop();
+                //stopwatch.Stop();
 
                 response.EnsureSuccessStatusCode();
                 var rawJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -73,7 +69,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                 _apiResponseCache.TryRemove(apiRequest, out _);
 
                 // Optional: Log API response time for diagnostics
-                Console.WriteLine($"API Request {apiRequest} took {stopwatch.ElapsedMilliseconds} ms");
+                //Console.WriteLine($"API Request {apiRequest} took {stopwatch.ElapsedMilliseconds} ms");
             }
             catch (Exception ex)
             {

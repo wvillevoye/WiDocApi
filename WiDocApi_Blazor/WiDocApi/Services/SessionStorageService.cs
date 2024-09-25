@@ -29,4 +29,9 @@ namespace WiDocApi_Blazor.WiDocApi.Services
             return !string.IsNullOrEmpty(apiKey);
         }
     }
+
+    public class ApiStateService
+    {
+        public bool ApiKeyExists { get; set; }
+    }
 }
