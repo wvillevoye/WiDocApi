@@ -8,7 +8,7 @@
 	<Authors>Willy Villevoye</Authors>
 	<!--<Company>Maastricht University Library</Company>-->
 	<Description>WidDocApi_blazor is a look a like of swagger in one blazazzor app</Description>
-	<Version>1.1.0</Version>
+	<Version>1.1.1</Version>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<PackageId>WiDocApi_blazor</PackageId>
 	<Product>WiDocApi</Product>

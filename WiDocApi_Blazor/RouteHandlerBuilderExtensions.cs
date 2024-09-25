@@ -33,14 +33,13 @@ public static class RouteHandlerBuilderExtensions
                 Description = endpointInfo.Description,
                 RequiresInput = endpointInfo.RequiresInput,
                 CacheDurationMinutes = endpointInfo.CacheDurationMinutes,
-                Active = endpointInfo.Active,
-                ParameterTypes = new List<string>() // Initialize the list
+                Active = endpointInfo.Active
             };
 
             var httpMethodMetadata = endpointBuilder.Metadata.OfType<HttpMethodMetadata>().FirstOrDefault();
             if (httpMethodMetadata != null)
             {
-                currentEndpointInfo.Method = ParseHttpMethod(httpMethodMetadata.HttpMethods.First());
+                currentEndpointInfo.HttpMethod = ParseHttpMethod(httpMethodMetadata.HttpMethods.First());
             }
 
             // Capture the route pattern
@@ -55,7 +54,7 @@ public static class RouteHandlerBuilderExtensions
                 // Fallback in case it's not a RouteEndpointBuilder
                 currentEndpointInfo.Path = $"[Unknown Route]";
             }
-            if (!WiDocApiStorage.WiDocApiList.Any(e => e.Method == currentEndpointInfo.Method && e.Path == currentEndpointInfo.Path))
+            if (!WiDocApiStorage.WiDocApiList.Any(e => e.HttpMethod == currentEndpointInfo.HttpMethod && e.Path == currentEndpointInfo.Path))
             {
                 if (currentEndpointInfo.Active)
                 {

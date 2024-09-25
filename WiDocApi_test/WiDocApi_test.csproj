@@ -21,4 +21,10 @@
     <ProjectReference Include="..\WiDocApi_Blazor\WiDocApi_Blazor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\ApiEndpoints.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

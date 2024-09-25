@@ -36,7 +36,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                 endpoint.ApiResponse = null;
                 endpoint.ApiRequest = apiRequest;
 
-                using var requestMessage = new HttpRequestMessage(HttpMethod.Parse(endpoint.Method.ToString()!), new Uri(apiRequest));
+                using var requestMessage = new HttpRequestMessage(HttpMethod.Parse(endpoint.HttpMethod.ToString()!), new Uri(apiRequest));
 
                 var apiKey = _configuration["ApiSettings:ValidApiKey"];
 
@@ -54,7 +54,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                     requestMessage.Headers.Add("X-Api-Key", apiKey);
                 }
 
-                if (IsContentRequired(endpoint.Method.ToString().ToString()!))
+                if (IsContentRequired(endpoint.HttpMethod.ToString().ToString()!))
                 {
                     var jsonPayload = endpoint.Payload ?? string.Empty;
                     requestMessage.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");

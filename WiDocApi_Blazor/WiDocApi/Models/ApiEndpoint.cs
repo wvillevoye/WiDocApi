@@ -1,10 +1,40 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WiDocApi_Blazor.WiDocApi.Models
 {
     public class ApiEndpoint
     {
+
+        private WiDocApiHttpMethod _httpMethod;
+
+        [JsonIgnore]
+        public WiDocApiHttpMethod HttpMethod
+        {
+            get => _httpMethod;
+            set => _httpMethod = value;
+        }
+
+
+        [JsonPropertyName("httpMethod")]
+        public string HttpMethodString
+        {
+            get => _httpMethod.ToString();
+            set
+            {
+                if (Enum.TryParse<WiDocApiHttpMethod>(value, true, out var parsedEnum))
+                {
+                    _httpMethod = parsedEnum;
+                }
+                else
+                {
+                    _httpMethod = WiDocApiHttpMethod.UNKNOWN;
+                }
+            }
+        }
+
+
         public int Id { get; set; }
 
         public string BaseUrl { get; set; } = string.Empty;
@@ -14,9 +44,6 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         public string Path { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
-
-        // Use an enum to represent HTTP methods.
-        public WiDocApiHttpMethod Method { get; set; } = WiDocApiHttpMethod.UNKNOWN;
 
         public bool RequiresInput { get; set; } = true;
 
@@ -36,9 +63,6 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         public string? ApiRequest { get; set; }
 
         public string? Curl { get; set; }
-
-
-        public List<string> ParameterTypes = [];
 
 
         private Dictionary<string, string> _dynamicInputValues = new();
