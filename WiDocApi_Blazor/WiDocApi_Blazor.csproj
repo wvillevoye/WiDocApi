@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+	<TargetFramework>net8.0</TargetFramework>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
 	<Title>WiDocApi_blazor Net 8.0</Title>
 	<Authors>Willy Villevoye</Authors>
 	<!--<Company>Maastricht University Library</Company>-->
@@ -20,15 +20,15 @@
  </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="WiDocApi\Helpers\MappingEndpoints.cs" />
+	<Compile Remove="WiDocApi\Helpers\MappingEndpoints.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="README.md" />
+	<None Remove="README.md" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="README.md" />
+	<Content Include="README.md" />
   </ItemGroup>
 	<ItemGroup>
 		<None Include="Firefly vector logo, coding, book, database 57227.png" Pack="true" PackagePath="\" />
@@ -37,26 +37,26 @@
 
 
   <ItemGroup>
-    <SupportedPlatform Include="browser" />
+	<SupportedPlatform Include="browser" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.8" />
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+	<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.8" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Apidocs.razor.css">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Components\ApiEndpointAccordion.razor.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Components\ModelAccordion.razor.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+	<None Update="Apidocs.razor.css">
+	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	</None>
+	<None Update="Components\ApiEndpointAccordion.razor.css">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+	<None Update="Components\ModelAccordion.razor.css">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
   </ItemGroup>
 
 </Project>
