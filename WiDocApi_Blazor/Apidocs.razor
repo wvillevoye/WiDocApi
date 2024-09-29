@@ -158,12 +158,23 @@
       
         if (endpoint.RequiresInput)
         {
-            // Controleer of alle vereiste inputwaarden zijn ingevuld
+            // Check if all required input values are provided
             foreach (var param in ExtractParameters.FromPath(endpoint.Path!))
             {
-                if (string.IsNullOrEmpty(endpoint.DynamicInputValues[param]))
+                // Cast the value to string (if it exists) for the null or empty check
+                if (endpoint.DynamicInputValues.TryGetValue(param.ParameterName, out var value) && value is string stringValue)
                 {
-                    endpoint.ApiResponse = $"Input required for '{param}' but not provided.";
+                    if (string.IsNullOrEmpty(stringValue))
+                    {
+                        endpoint.ApiResponse = $"Input required for '{param.ParameterName}' but not provided.";
+                        isLoading = false;
+                        return;
+                    }
+                }
+                else
+                {
+                    // Handle case where parameter is missing or not a string
+                    endpoint.ApiResponse = $"Input required for '{param.ParameterName}' but not provided.";
                     isLoading = false;
                     return;
                 }
@@ -176,10 +187,6 @@
         isLoading = false;
         
     }
-    
-  
-
-    
 
 }
 

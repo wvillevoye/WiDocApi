@@ -1,4 +1,5 @@
-﻿@typeparam T
+﻿@using Microsoft.AspNetCore.Components.Forms
+@typeparam T
 @inject HttpMethodClassMapper HttpMethodClassMapper
 @inject ExtractParameters ExtractParameters
 
@@ -52,9 +53,30 @@
                             <dl class="row mb-2">
                                 @foreach (var param in ExtractParameters.FromPath(endpoint.Path!))
                                 {
-                                    <dt class="col-sm-2">@param</dt>
+                                    <dt class="col-sm-2">@param.ParameterName</dt>
+
                                     <dd class="col-sm-10">
-                                        <input type="text" @bind="endpoint.DynamicInputValues[param]" placeholder="Enter @param..." class="form-control" />
+                                        @switch (param.Type)
+                                        {
+                                            case "int":
+                                                <input type="number" @bind="endpoint.DynamicInputValues[param.ParameterName]" style="width:100px" placeholder="Enter @param.ParameterName..." class="form-control" />
+                                                break;
+                                            case "bool":
+                                                <input type="checkbox" checked="@endpoint.DynamicInputValues[param.ParameterName])"
+                                                       @onchange="(e) => SetDynamicInputValue(e, param.ParameterName, endpoint)"
+                                                       class="form-check-input" />
+                                                 break;
+                                            case "datetime":
+                                                <input type="date" Value="@GetDateTimeValue(param.ParameterName, endpoint)"
+                                                           ValueChanged="(DateTime? value) => SetDateTimeValue(value, param.ParameterName, endpoint)"
+                                                           class="form-control" style="width:200px" />
+                                                break;
+                                           
+
+                                            default:
+                                                <input type="text" @bind="endpoint.DynamicInputValues[param.ParameterName]" placeholder="Enter @param.ParameterName..." class="form-control" />
+                                                break;
+                                        }
                                     </dd>
                                 }
                             </dl>
@@ -118,9 +140,38 @@
 
     [Parameter]
     public Func<bool> IsValidApiKeyConfigured { get; set; } = default!;
+ 
+    private void SetDynamicInputValue(ChangeEventArgs e, string parameterName, ApiEndpoint endpoint)
+    {
+        // Convert the checkbox value to a boolean and update the dictionary
+        if (endpoint.DynamicInputValues.ContainsKey(parameterName))
+        {
+            var check = (bool)e.Value!;
+            endpoint.DynamicInputValues[parameterName] = check.ToString();
+        }
+    }
 
-  
+    private DateTime? GetDateTimeValue(string parameterName, ApiEndpoint endpoint)
+    {
+        if (endpoint.DynamicInputValues.ContainsKey(parameterName) &&
+            DateTime.TryParse(endpoint.DynamicInputValues[parameterName], out DateTime dateValue))
+        {
+            return dateValue;
+        }
+        return null; // Return null if the value doesn't exist or can't be parsed
+    }
 
+    private void SetDateTimeValue(DateTime? date, string parameterName, ApiEndpoint endpoint)
+    {
+        if (date.HasValue)
+        {
+            endpoint.DynamicInputValues[parameterName] = date.Value.ToString("yyyy-MM-dd");
+        }
+        else
+        {
+            endpoint.DynamicInputValues[parameterName] = null; // Handle null case
+        }
+    }
 
 }
 

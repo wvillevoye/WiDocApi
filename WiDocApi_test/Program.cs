@@ -5,6 +5,8 @@ using WiDocApi_Blazor;
 using WiDocApi_Blazor.WiDocApi.Helpers;
 using WiDocApi_test.Endpoints;
 using Microsoft.Extensions.Configuration;
+using static WiDocApi_test.Endpoints.PersonEndpoints;
+using WiDocApi_test.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +19,16 @@ builder.Services.AddDbContext<SamplePersonsContext>(options =>
                      .LogTo(Console.WriteLine, LogLevel.Warning) // Set log level to Warning or higher
                      .EnableSensitiveDataLogging(false)); // Disable sensitive
 
+builder.Services.AddRouting(options =>
+{
+    options.ConstraintMap.Add("sampleEnum", typeof(EnumRouteConstraint<SampleEnum>));
+});
+
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
+
+
+
 
 builder.Services.AddSiteWiDocApi();
 
@@ -42,5 +52,6 @@ app.MapRazorComponents<App>()
 
 
 app.PersonsEndpoints(builder.Configuration);
+
 
 app.Run();

@@ -23,7 +23,7 @@ namespace WiDocApi_test.Endpoints
 
 
 
-            group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
+            group.MapGet("/Person/{SearchById:int}", async (int SearchById, SamplePersonsContext dbContext) =>
             {
                 var _person = await dbContext.Persons.FindAsync(SearchById);
 
@@ -42,7 +42,7 @@ namespace WiDocApi_test.Endpoints
                  CacheDurationMinutes = 10,
              });
 
-            group.MapGet("/Person/search/{SearchStartWithLastName}/{city}", async (string SearchStartWithLastName, string city, SamplePersonsContext dbContext) =>
+            group.MapGet("/Person/search/{SearchStartWithLastName}/{city:bool}", async (string SearchStartWithLastName, bool city, SamplePersonsContext dbContext) =>
             {
                 var _persons = await dbContext.Persons.Where(x => x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
 
@@ -61,6 +61,29 @@ namespace WiDocApi_test.Endpoints
                 CacheDurationMinutes = 10,
                 //Active = false,
             });
+
+
+
+
+
+
+            group.MapGet("/Person/Test/{_String}/{_bool:bool}/{_int:int}/{_date:datetime}/{_enum:SampleEnum}",
+                async (string _String, bool _bool, int _int, DateTime _date, SampleEnum _enum, SamplePersonsContext dbContext) =>
+                {
+                    // Your logic here
+                    return Results.Ok(new { _String, _bool, _int, _date, _enum });
+                })
+                .WithName("Test")
+                .WithOpenApi()
+                .AddWiDocApiEndpoints(new EndpointInfo
+                {
+                    Group = "GetPerson",
+                    Description = "Test my input box with enum",
+                    CacheDurationMinutes = 10,
+                });
+
+
+
 
             group.MapPost("/Person", async (Person newPerson, SamplePersonsContext dbContext) =>
             {
@@ -153,6 +176,12 @@ namespace WiDocApi_test.Endpoints
 
 
 
+        }
+        public enum SampleEnum
+        {
+            Option1,
+            Option2,
+            Option3
         }
     }
 }

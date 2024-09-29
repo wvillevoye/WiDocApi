@@ -90,15 +90,24 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
             // Use Regex to replace each parameter in the path with the corresponding value from DynamicInputValues
             string fullPath = Regex.Replace(formattedPath, @"\{(.*?)\}", match =>
             {
-                var paramName = match.Groups[1].Value;
-                return endpoint.DynamicInputValues.TryGetValue(paramName, out var paramValue)
-                    ? paramValue
-                    : throw new KeyNotFoundException($"The given key '{paramName}' was not present in the dictionary.");
+                var paramName = match.Groups[1].Value.Split(':')[0]; // Get the parameter name
+
+                // Attempt to get the value from DynamicInputValues
+                if (endpoint.DynamicInputValues.TryGetValue(paramName, out var paramValue))
+                {
+                    // Return the value as a string, casting if necessary
+                    return paramValue?.ToString() ?? throw new KeyNotFoundException($"The given key '{paramName}' was not present in the dictionary.");
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"The given key '{paramName}' was not present in the dictionary.");
+                }
             });
 
             // Concatenate base URL with the path
             return $"{baseUrl}{fullPath}";
         }
+
 
         private bool IsContentRequired(string method)
         {
