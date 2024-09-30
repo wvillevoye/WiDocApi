@@ -55,22 +55,14 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                 "int" => 0,
                 "bool" => false, // Keep as boolean
                 "string" => string.Empty,
-                "datetime" => DateTime.Now,
-               // "enum" => GetEnumDefaultValue(),
+                "datetime" => DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+               // "datetime" => DateTime.MinValue,
+                "enum" => string.Empty, // GetEnumDefaultValue(), // Placeholder for enum type
                 _ => string.Empty // Default to string for unknown types
             };
         }
 
-        // Helper function to get the default enum value (typically the first one)
-        //private object GetEnumDefaultValue()
-        //{
-        //    // If you want to pass a specific enum type, you can modify this function to handle that case.
-        //    // For now, it returns a placeholder value.
-        //    // Replace 'YourEnumType' with an actual enum type you want to handle
-        //    Type enumType = typeof(YourEnumType); // Replace 'YourEnumType' with your actual enum type
-        //    var values = Enum.GetValues(enumType);
-        //    return values.Length > 0 ? values.GetValue(0) : 0; // Return the first value or 0 if no values found
-        //}
+      
 
         public  string CreateCurl(ApiEndpoint endpoint, bool IsValidApiKeyConfigured , string apiKey)
         {

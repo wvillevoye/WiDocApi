@@ -33,6 +33,8 @@ public static class RouteHandlerBuilderExtensions
                 Description = endpointInfo.Description,
                 RequiresInput = endpointInfo.RequiresInput,
                 CacheDurationMinutes = endpointInfo.CacheDurationMinutes,
+                EnumLists = endpointInfo.EnumLists,
+
                 Active = endpointInfo.Active
             };
 

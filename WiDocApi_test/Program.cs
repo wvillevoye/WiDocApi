@@ -22,6 +22,7 @@ builder.Services.AddDbContext<SamplePersonsContext>(options =>
 builder.Services.AddRouting(options =>
 {
     options.ConstraintMap.Add("sampleEnum", typeof(EnumRouteConstraint<SampleEnum>));
+    options.ConstraintMap.Add("ProgramLangEnum", typeof(EnumRouteConstraint<ProgramLangEnum>));
 });
 
 

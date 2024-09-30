@@ -10,8 +10,8 @@ namespace WiDocApi_test.Helpers
 {
     public class EnumRouteConstraint<T> : IRouteConstraint where T : struct, Enum
     {
-        public bool Match(HttpContext httpContext,
-                          IRouter route,
+        public bool Match(HttpContext? httpContext,
+                          IRouter? route,
                           string routeKey,
                           RouteValueDictionary values,
                           RouteDirection routeDirection)

@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Text.Json;
+using WiDocApi_Blazor.WiDocApi.Helpers;
 using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_test.Models;
 
@@ -20,8 +23,35 @@ namespace WiDocApi_test.Endpoints
             {
                 group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
             }
+            //********
+            group.MapGet("/Test/{_String}/{_bool:bool}/{_int:int}/{_enum:SampleEnum}/{_enum1:ProgramLangEnum}/{_date:datetime}/",
+              (string _String, bool _bool, int _int, SampleEnum _enum, ProgramLangEnum _enum1, DateTime _date) =>
+              {
+                  var _res = JsonSerializer.Serialize(new Dictionary<string, object>
+                    {
+                        {"String", _String},
+                        {"bool", _bool.ToString()},
+                        {"int", _int.ToString()},
+                        {"date", _date.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
+                        {"enum", _enum.ToString()},
+                        {"enum1", _enum1.ToString()}
+                    }, new JsonSerializerOptions { WriteIndented = true });
 
-
+                  return Results.Json(_res);
+              })
+           .WithName("Test123")
+           .WithOpenApi()
+           .AddWiDocApiEndpoints(new EndpointInfo
+           {
+               Group = "Test",
+               Description = "Test with string, int, bool , 2 enum and datime",
+               CacheDurationMinutes = 0,
+               EnumLists = EnumUtils.CreateEnumLists(
+                            ("_enum", typeof(SampleEnum)),
+                            ("_enum1", typeof(ProgramLangEnum))
+                           )
+           });
+            //*********
 
             group.MapGet("/Person/{SearchById:int}", async (int SearchById, SamplePersonsContext dbContext) =>
             {
@@ -42,7 +72,7 @@ namespace WiDocApi_test.Endpoints
                  CacheDurationMinutes = 10,
              });
 
-            group.MapGet("/Person/search/{SearchStartWithLastName}/{city:bool}", async (string SearchStartWithLastName, bool city, SamplePersonsContext dbContext) =>
+            group.MapGet("/Person/search/{SearchStartWithLastName}", async (string SearchStartWithLastName, SamplePersonsContext dbContext) =>
             {
                 var _persons = await dbContext.Persons.Where(x => x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
 
@@ -62,29 +92,6 @@ namespace WiDocApi_test.Endpoints
                 //Active = false,
             });
 
-
-
-
-
-
-            group.MapGet("/Person/Test/{_String}/{_bool:bool}/{_int:int}/{_date:datetime}/{_enum:SampleEnum}",
-                async (string _String, bool _bool, int _int, DateTime _date, SampleEnum _enum, SamplePersonsContext dbContext) =>
-                {
-                    // Your logic here
-                    return Results.Ok(new { _String, _bool, _int, _date, _enum });
-                })
-                .WithName("Test")
-                .WithOpenApi()
-                .AddWiDocApiEndpoints(new EndpointInfo
-                {
-                    Group = "GetPerson",
-                    Description = "Test my input box with enum",
-                    CacheDurationMinutes = 10,
-                });
-
-
-
-
             group.MapPost("/Person", async (Person newPerson, SamplePersonsContext dbContext) =>
             {
                 // Add the new person to the database
@@ -103,7 +110,7 @@ namespace WiDocApi_test.Endpoints
                 RequiresInput = false,
             });
 
-            group.MapPut("/Person/{ById}", async (int ById, Person updatedPerson, SamplePersonsContext dbContext) =>
+            group.MapPut("/Person/{ById:int}", async (int ById, Person updatedPerson, SamplePersonsContext dbContext) =>
             {
                 // Find the person by ID
                 var existingPerson = await dbContext.Persons.FindAsync(ById);
@@ -149,7 +156,7 @@ namespace WiDocApi_test.Endpoints
                 Description = "Update a person by ID",
             });
 
-            group.MapDelete("/Person/{ById}", async (int ById, SamplePersonsContext dbContext) =>
+            group.MapDelete("/Person/{ById:int}", async (int ById, SamplePersonsContext dbContext) =>
             {
                 // Find the person by ID
                 var personToDelete = await dbContext.Persons.FindAsync(ById); ;
@@ -182,6 +189,13 @@ namespace WiDocApi_test.Endpoints
             Option1,
             Option2,
             Option3
+        }
+
+        public enum ProgramLangEnum
+        {
+            cobel,
+            python,
+            csharp,
         }
     }
 }
