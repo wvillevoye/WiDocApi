@@ -27,7 +27,7 @@ namespace WiDocApi_test.Endpoints
             group.MapGet("/Test/{_String}/{_bool:bool}/{_int:int}/{_enum:SampleEnum}/{_enum1:ProgramLangEnum}/{_date:datetime}/",
               (string _String, bool _bool, int _int, SampleEnum _enum, ProgramLangEnum _enum1, DateTime _date) =>
               {
-                  var _res = JsonSerializer.Serialize(new Dictionary<string, object>
+                  var _res = new Dictionary<string, object>
                     {
                         {"String", _String},
                         {"bool", _bool.ToString()},
@@ -35,9 +35,9 @@ namespace WiDocApi_test.Endpoints
                         {"date", _date.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
                         {"enum", _enum.ToString()},
                         {"enum1", _enum1.ToString()}
-                    }, new JsonSerializerOptions { WriteIndented = true });
+                    };
 
-                  return Results.Json(_res);
+                  return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
               })
            .WithName("Test123")
            .WithOpenApi()
@@ -193,7 +193,7 @@ namespace WiDocApi_test.Endpoints
 
         public enum ProgramLangEnum
         {
-            cobel,
+            cobol,
             python,
             csharp,
         }

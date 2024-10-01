@@ -2,7 +2,7 @@
 @typeparam T
 @inject HttpMethodClassMapper HttpMethodClassMapper
 @inject ExtractParameters ExtractParameters
-
+@inject WiDocApiScript JsInterop
 
 <div class="pt-3">
 
@@ -122,9 +122,13 @@
                                 <pre class="p-3 mb-2 bg-dark text-info rounded">@endpoint.Curl</pre>
                             </div>
 
-                            <div class="scroll">
+                            <div class="scroll position-relative">
                                 <h6>API Response</h6>
-                                <pre class="p-3 mb-2 bg-dark text-white rounded">@endpoint.ApiResponse</pre>
+                                <button class="btn btn-link p-0 position-absolute" style="top: 25px; right: 0; z-index: 1; padding-right: 10px; color: white;"
+                                        @onclick="() => DownloadJsonFileAsync(endpoint.ApiResponse)" title="Copy to clipboard">
+                                    <i class="bi bi-box-arrow-down" style="font-size: 25px;"></i>
+                                </button>
+                                <pre id="apiResponseText" class="p-3 mb-2 bg-dark text-white rounded">@endpoint.ApiResponse</pre>
                             </div>
                         }
                         else if (endpoint.HasError)
@@ -173,6 +177,24 @@
             endpoint.DynamicInputValues[parameterName] = date!.Value.ToString("yyyy-MM-dd HH:mm:ss");
       
         
+    }
+
+    private async Task DownloadJsonFileAsync(string apiResponse)
+    {
+        if (JsInterop != null)
+        {
+            await JsInterop.DownloadJsonFile(apiResponse);
+        }
+    }
+
+
+   // Dispose the JS module when the component is disposed.
+    public async ValueTask DisposeAsync()
+    {
+        if (JsInterop != null)
+        {
+            await JsInterop.DisposeAsync();
+        }
     }
    
 }

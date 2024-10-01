@@ -1,4 +1,4 @@
-# WiDocApi
+﻿# WiDocApi
 > ### This version now includes specific examples of both `ApiEndpoints.json` and `appsettings.json` to give users clear instructions on how to configure and use the API settings.
 ### This updated version includes the mention of the **WiDocApi_test** project, which provides an example of how to integrate the WiDocApi library into a Blazor app.
 **WiDocApi** is a Blazor .NET 8 program built as a Razor Class Library that provides a Swagger-like interface for API documentation and interaction. The project supports API key integration and manages API calls through a JSON configuration file in the `Endpoints` directory of the main Blazor application.
@@ -29,25 +29,79 @@ public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfi
             {
                 group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
             }
-            group.MapGet("/Person/{SearchById}", async (int SearchById, SamplePersonsContext dbContext) =>
-            {
-                var _person = await dbContext.Persons.SingleOrDefaultAsync(x=>x.PersonID.Equals(SearchById));
-                if (_person == null)
-                {
-                    return Results.NotFound("Person not found.");
-                }
-                return Results.Ok(_person);
-            }).WithName("SearchById").WithOpenApi();
+            group.MapGet
             etc...
            
 ```
-
+## New in version 2.0.0
+## Using your own endpoints in your Blazor App?:
+- For version 2.0.0 it is possible to specify the type for the endpoints, for example :int :bool :enum :datatime
+see an example below
+- it is possible to download your endpoints result.
+- it is to use the enum in the endpoint you must add the EnumUtils class to your project in my example:
 
 ### Create in your blazor a new component and add the following code:
+```csharp
+ 
+    group.MapGet("/Test/{_String}/{_bool:bool}/{_int:int}/{_enum:SampleEnum}/{_enum1:ProgramLangEnum}/{_date:datetime}/",
+      (string _String, bool _bool, int _int, SampleEnum _enum, ProgramLangEnum _enum1, DateTime _date) =>
+        {
+           var _res = new Dictionary<string, object>
+             {
+               {"String", _String},
+               {"bool", _bool.ToString()},
+               {"int", _int.ToString()},
+               {"date", _date.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
+               {"enum", _enum.ToString()},
+                {"enum1", _enum1.ToString()}
+             };
+
+               return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
+         })
+         .WithName("Test123")
+         .WithOpenApi()
+         .AddWiDocApiEndpoints(new EndpointInfo
+           {
+               Group = "Test",
+               Description = "Test with string, int, bool , 2 enum and datime",
+               CacheDurationMinutes = 0,
+               EnumLists = EnumUtils.CreateEnumLists(
+                            ("_enum", typeof(SampleEnum)),
+                            ("_enum1", typeof(ProgramLangEnum))
+                           )
+           });
+
+
+ public enum SampleEnum
+        {
+            Option1,
+            Option2,
+            Option3
+        }
+
+        public enum ProgramLangEnum
+        {
+            cobol,
+            python,
+            csharp
+        }
+ ```
+
+ ![Afbeelding](assets/WiDocApi2.png)
 
 
 
-```razor
+ if you want to use the enum in the endpoint you must add the EnumUtils class to your project in my example:
+ ```csharp
+ builder.Services.AddRouting(options =>
+{
+    options.ConstraintMap.Add("sampleEnum", typeof(EnumRouteConstraint<SampleEnum>));
+    options.ConstraintMap.Add("ProgramLangEnum", typeof(EnumRouteConstraint<ProgramLangEnum>));
+});
+
+ ```
+ ## how to use this Blazor package:
+ ```csharp
 @page "/apidocs"
 @rendermode InteractiveServer
 <WiDocApi_Blazor.Apidocs T="@object" classModels="@modelList" jsonFilePath="@filePath" />
@@ -63,29 +117,19 @@ public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfi
     }
 }
 ```
-## Using your own endpoints in your Blazor App?:
-**Then you can use this:** .AddWiDocApiEndpoints
-```csharp
-  
- group.MapGet("/Person/search/{SearchStartWithLastName}/{city}", async (string SearchStartWithLastName, string city, SamplePersonsContext dbContext) =>
-      {
-       var _persons = await dbContext.Persons.Where(x => x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
+ **add this js script in your App.razor**  
+ _content/WiDocApi_Blazor/WiDocApiScript.js (this is for the download fun))
+ ```csharp
+ <body>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+    <script src="_content/WiDocApi_Blazor/WiDocApiScript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
 
-         if (_persons == null)
-          {
-              return Results.NotFound("Persons not found.");
-          }
-          return Results.Ok(_persons);
-        }).WithName("SearchStartWithLastName")
-          .WithOpenApi()
-          .AddWiDocApiEndpoints(new EndpointInfo
-             {
-                 Group = "GetPerson",
-                 Description = "Search person by last name starting with",
-                 CacheDurationMinutes = 10,
-             });
-           
-```
+````
+
+
 The endpoint class look like this:
 ```csharp
  public class EndpointInfo
