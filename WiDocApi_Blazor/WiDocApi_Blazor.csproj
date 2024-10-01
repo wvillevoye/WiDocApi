@@ -15,9 +15,10 @@
 	<Product>WiDocApi</Product>
 	<Copyright>MIT</Copyright>
 	<PackageIcon>Firefly vector logo, coding, book, database 57227.png</PackageIcon>
-	<PackageProjectUrl>https://gitlab.maastrichtuniversity.nl/library-systems-and-development/gpa/sp/widocapi_blazor</PackageProjectUrl>
+	<PackageProjectUrl>https://github.com/wvillevoye/WiDocApi</PackageProjectUrl>
 	<PackageTags>swagger blazor api doc</PackageTags>
 	<PackageOutputPath>C:\WerkCode\Packages\Nugets</PackageOutputPath>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
  </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +33,10 @@
 	<Content Include="README.md" />
   </ItemGroup>
 	<ItemGroup>
+		<None Include="..\README.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
 		<None Include="Firefly vector logo, coding, book, database 57227.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
@@ -48,9 +53,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\WiDocApiScript.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+	<Content Update="wwwroot\WiDocApiScript.js">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
   </ItemGroup>
 
   <ItemGroup>

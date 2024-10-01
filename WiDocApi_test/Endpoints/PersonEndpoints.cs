@@ -24,17 +24,17 @@ namespace WiDocApi_test.Endpoints
                 group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
             }
             //********
-            group.MapGet("/Test/{_String}/{_bool:bool}/{_int:int}/{_enum:SampleEnum}/{_enum1:ProgramLangEnum}/{_date:datetime}/",
-              (string _String, bool _bool, int _int, SampleEnum _enum, ProgramLangEnum _enum1, DateTime _date) =>
+            group.MapGet("/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:SampleEnum}/{SampleList1:ProgramLangEnum}/{SampleDate:datetime}/",
+              (string SampleString, bool SampleBool, int SampleInt, SampleEnum SampleList, ProgramLangEnum SampleList1, DateTime SampleDate) =>
               {
                   var _res = new Dictionary<string, object>
                     {
-                        {"String", _String},
-                        {"bool", _bool.ToString()},
-                        {"int", _int.ToString()},
-                        {"date", _date.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
-                        {"enum", _enum.ToString()},
-                        {"enum1", _enum1.ToString()}
+                        {"String", SampleString},
+                        {"bool", SampleBool.ToString()},
+                        {"int", SampleInt.ToString()},
+                        {"date", SampleDate.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
+                        {"enum", SampleList.ToString()},
+                        {"enum1", SampleList1.ToString()}
                     };
 
                   return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
@@ -47,8 +47,8 @@ namespace WiDocApi_test.Endpoints
                Description = "Test with string, int, bool , 2 enum and datime",
                CacheDurationMinutes = 0,
                EnumLists = EnumUtils.CreateEnumLists(
-                            ("_enum", typeof(SampleEnum)),
-                            ("_enum1", typeof(ProgramLangEnum))
+                            ("SampleList", typeof(SampleEnum)),
+                            ("SampleList1", typeof(ProgramLangEnum))
                            )
            });
             //*********

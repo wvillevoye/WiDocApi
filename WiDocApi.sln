@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiDocApi_Blazor", "WiDocApi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E94E6BDE-7AF3-4588-B4F8-87DED3A76BAA}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
