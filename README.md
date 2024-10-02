@@ -9,6 +9,18 @@
 - **API Key Integration**: API calls are secured using an API key stored in the `appsettings.json` file.
 - **Single Razor Component Page**: The interface is rendered as a single Razor component, making it easy to integrate.
 - **JSON-Based API Configuration**: API calls are defined in an `apisettings.json` file, enabling easy management of endpoints.
+
+
+To create a new Blazor project with the WiDocApi library, follow these steps:
+- Create a new Blazor Web App project.
+- Framework: .NET 8.0
+- Authentication: None Authentication
+- Configure for HTTPS: Yes
+- interacrive render mode: Server
+- Interactivity locaction: Per page/Component
+- Include sample pages: (optional)
+
+
 ![Afbeelding](assets/WiDocApi.png)
 
 > #### download the WiDocApi library from my GitHub https://github.com/wvillevoye/WiDocApi/pkgs/nuget/WiDocApi_blazor
@@ -38,53 +50,39 @@ public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfi
 - For version 2.0.0 it is possible to specify the type for the endpoints, for example :int :bool :enum :datatime
 see an example below
 - it is possible to download your endpoints result.
-- it is to use the enum in the endpoint you must add the EnumUtils class to your project in my example:
+- it is to use the enum in the endpoint you must add the EnumUtils class to your project Please note that with Name:enum the enum must always be named, for example Cars:CarsEnum:
 
 ### Create in your blazor a new component and add the following code:
 ```csharp
  
-    group.MapGet("/Test/{_String}/{_bool:bool}/{_int:int}/{_enum:SampleEnum}/{_enum1:ProgramLangEnum}/{_date:datetime}/",
-      (string _String, bool _bool, int _int, SampleEnum _enum, ProgramLangEnum _enum1, DateTime _date) =>
-        {
-           var _res = new Dictionary<string, object>
-             {
-               {"String", _String},
-               {"bool", _bool.ToString()},
-               {"int", _int.ToString()},
-               {"date", _date.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
-               {"enum", _enum.ToString()},
-                {"enum1", _enum1.ToString()}
-             };
+              group.MapGet("/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:SampleEnum}/{SampleList1:ProgramLangEnum}/{SampleDate:datetime}/",
+              (string SampleString, bool SampleBool, int SampleInt, SampleEnum SampleList, ProgramLangEnum SampleList1, DateTime SampleDate) =>
+              {
+                  var _res = new Dictionary<string, object>
+                    {
+                        {"String", SampleString},
+                        {"bool", SampleBool.ToString()},
+                        {"int", SampleInt.ToString()},
+                        {"date", SampleDate.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
+                        {"enum", SampleList.ToString()},
+                        {"enum1", SampleList1.ToString()}
+                    };
 
-               return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
-         })
-         .WithName("Test123")
-         .WithOpenApi()
-         .AddWiDocApiEndpoints(new EndpointInfo
+                  return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
+              })
+           .WithName("Test123")
+           .WithOpenApi()
+           .AddWiDocApiEndpoints(new EndpointInfo
            {
                Group = "Test",
                Description = "Test with string, int, bool , 2 enum and datime",
                CacheDurationMinutes = 0,
                EnumLists = EnumUtils.CreateEnumLists(
-                            ("_enum", typeof(SampleEnum)),
-                            ("_enum1", typeof(ProgramLangEnum))
+                            ("SampleList", typeof(SampleEnum)),
+                            ("SampleList1", typeof(ProgramLangEnum))
                            )
            });
 
-
- public enum SampleEnum
-        {
-            Option1,
-            Option2,
-            Option3
-        }
-
-        public enum ProgramLangEnum
-        {
-            cobol,
-            python,
-            csharp
-        }
  ```
 
  ![Afbeelding](assets/WiDocApi2.png)
