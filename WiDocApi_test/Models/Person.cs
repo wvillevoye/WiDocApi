@@ -15,6 +15,7 @@ public partial class Person
     public string FirstName { get; set; }
 
     [StringLength(50)]
+    [Required]
     [WiDocApiSchema("Last name of the person")]
     public string LastName { get; set; }
 
