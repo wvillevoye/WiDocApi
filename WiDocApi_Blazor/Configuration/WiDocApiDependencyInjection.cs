@@ -24,6 +24,7 @@ namespace WiDocApi_Blazor.Configuration.WiDocApi
             services.AddScoped<SessionStorageService>();
             services.AddScoped<ExtractParameters>();
             services.AddSingleton<ApiStateService>();
+
         }
 
     }

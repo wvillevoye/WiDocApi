@@ -1,22 +1,27 @@
-﻿@using System.ComponentModel.DataAnnotations
+﻿@using System.Text.Json
+@using System.ComponentModel.DataAnnotations
 @typeparam T
+
 <div class="pt-1">
-
     <h4>Models</h4>
-
 </div>
+
 <div class="accordion" id="accordionModels">
     @foreach (var (model, index) in classModels!.Select((m, i) => (m, i + 1000)))
     {
-        <div class="accordion-item accordion-item-spacing" style="background-color:whitesmoke">
+        <div class="accordion-item accordion-item-spacing" style="background-color:#ECF3Fa">
             <h2 class="accordion-header accordion-moduleinfo" id="heading-@index">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@index" aria-expanded="false" aria-controls="collapse-@index">
-                    <span style="font-weight:600"> @model!.GetType().Name</span>
+                <button class="accordion-button collapsed" style="background-color:#e76739;color:white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@index" aria-expanded="false" aria-controls="collapse-@index">
+                    <span style="font-weight:600"><i class="bi bi-database-fill px-1"></i> @model!.GetType().Name</span>
                 </button>
             </h2>
-            <div id="collapse-@index" class="accordion-collapse collapse" aria-labelledby="heading-@index" data-bs-parent="#accordionModels" >
+           
+
+            <div id="collapse-@index" class="accordion-collapse collapse" aria-labelledby="heading-@index" data-bs-parent="#accordionModels">
                 <div class="accordion-body">
                     <div class="accordion" id="TestAcc">
+                        
+
                         @foreach (var description in GetPropertyDescriptions(model))
                         {
                             var collapseId = $"collapse_{description.Name}";
@@ -24,22 +29,45 @@
 
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="@headingId">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="true" aria-controls="@collapseId">
-                                       Name :  <b>@description.Name</b>
+                                    <button class="accordion-button" type="button" style="background-color:#f5f5f5;color:#001C3D" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="true" aria-controls="@collapseId">
+                                        <i class="bi bi-filetype-key  px-1"></i><b>@description.Name</b>
                                     </button>
                                 </h2>
                                 <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush">
-                                            <li class="list-group-item small-text">description : @description.Note</li>
-                                            <li class="list-group-item small-text">property : <i>@description.Prop</i></li>
-                                            <li class="list-group-item small-text"> attribute : @description.Attri</li>
+                                            @if (!string.IsNullOrEmpty(description.Note))
+                                            {
+                                                <li class="list-group-item small-text">
+                                                    <i class="bi bi-record px-1"></i> @description.Note
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="list-group-item small-text">
+                                                    <i class="bi bi-record px-1"></i> Sorry no description: [WiDocApiSchema("text")] attribute to add description.
+                                                </li>
+                                            }
+                                            <li class="list-group-item small-text">
+                                                <i class="bi bi-braces-asterisk px-1"></i> <i>@description.Prop</i>
+                                            </li>
+                                            @if (!string.IsNullOrEmpty(description.Attri))
+                                            {
+                                                <li class="list-group-item small-text">
+                                                    <i class="bi bi-braces px-1"></i> @description.Attri
+                                                </li>
+                                            }
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         }
                     </div>
+                    <button class="btn btn-primary btn-sm mt-3" @onclick="@(() => GenerateSampleJson(model))"><i class="bi bi-filetype-json"></i></button>
+                    @if (!string.IsNullOrEmpty(sampleJson))
+                    {
+                        <pre>@sampleJson</pre>
+                    }
                 </div>
             </div>
         </div>
@@ -49,6 +77,8 @@
 @code {
     [Parameter]
     public List<T>? classModels { get; set; } = new();
+
+    private string? sampleJson;
 
     private List<Descriptions> GetPropertyDescriptions(object model)
     {
@@ -66,41 +96,79 @@
 
                 var extraAttributes = new List<string>();
 
-                // Check for Required attribute
                 if (property.GetCustomAttribute<RequiredAttribute>() != null)
                 {
                     extraAttributes.Add("Required");
                 }
 
-                // Check for StringLength attribute
                 var stringLengthAttribute = property.GetCustomAttribute<StringLengthAttribute>();
                 if (stringLengthAttribute != null)
                 {
                     extraAttributes.Add($"StringLength({stringLengthAttribute.MaximumLength})");
                 }
 
-                // Combine attributes into one string
                 var attributesDescription = string.Join(", ", extraAttributes);
 
-                // descriptions.Add($"{property.Name} [{prop}] - ({attribute.Description}) {attributesDescription}");
                 descriptions.Add(new Descriptions()
-                {
+                    {
                         Name = property.Name,
                         Prop = prop,
                         Note = attribute.Description,
                         Attri = attributesDescription
-                });
+                    });
             }
         }
 
         return descriptions;
     }
+
+    private void GenerateSampleJson(object model)
+    {
+        sampleJson = CreateSampleJson(model);
+    }
+
+    private string CreateSampleJson(object model)
+    {
+        var type = model.GetType();
+        var sampleObject = Activator.CreateInstance(type);
+
+        foreach (var property in type.GetProperties())
+        {
+            if (property.CanWrite)
+            {
+                object sampleValue = GetSampleValue(property.PropertyType)!;
+                property.SetValue(sampleObject, sampleValue);
+            }
+        }
+
+        return JsonSerializer.Serialize(sampleObject, new JsonSerializerOptions { WriteIndented = true });
+    }
+
+    private object? GetSampleValue(Type type)
+    {
+        if (type == typeof(int) || type == typeof(int?))
+            return 1;
+        if (type == typeof(string))
+            return "SampleText";
+        if (type == typeof(DateTime) || type == typeof(DateTime?))
+            return DateTime.Now;
+        if (type == typeof(bool) || type == typeof(bool?))
+            return true;
+        if (type == typeof(double) || type == typeof(double?))
+            return 1.23;
+        if (type == typeof(float) || type == typeof(float?))
+            return 1.23f;
+        if (type.IsEnum)
+            return Enum.GetValues(type).GetValue(0)!;
+
+        return null;
+    }
+
     private class Descriptions
     {
         public string? Name { get; set; }
         public string? Prop { get; set; }
         public string? Note { get; set; }
         public string? Attri { get; set; }
-
     }
 }
