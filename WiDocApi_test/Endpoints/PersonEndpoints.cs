@@ -5,6 +5,7 @@ using System.Text.Json;
 using WiDocApi_Blazor.WiDocApi.Helpers;
 using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_test.Models;
+using WiDocApi_test.Services;
 
 
 
@@ -12,50 +13,56 @@ namespace WiDocApi_test.Endpoints
 {
     public static class PersonEndpoints
     {
-      public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
-      {
+        public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration, IPersonService _personService)
+        {
+            var statelist = _personService.GetStateAsync().Result;
+            var Ziplist = _personService.GetZipAsync().Result;
+
+
+
             var baseurlApi = "api/";
             var group = endpoints.MapGroup(baseurlApi)
-                        .WithTags("Persons");
+                .WithTags("Persons");
 
-           
             if (!string.IsNullOrEmpty(configuration["ApiSettings:ValidApiKey"]))
             {
                 group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
             }
+            List<string> stateResult = new List<string>();
             //********
-            group.MapGet("/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:SampleEnum}/{SampleList1:ProgramLangEnum}/{SampleDate:datetime}/",
-              (string SampleString, bool SampleBool, int SampleInt, SampleEnum SampleList, ProgramLangEnum SampleList1, DateTime SampleDate) =>
-              {
-                  var _res = new Dictionary<string, object>
+            group.MapGet("/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:SampleEnum}/{SampleList1:ProgramLangEnum}/{SampleDate:datetime}",
+                (string SampleString, bool SampleBool, int SampleInt, SampleEnum SampleList, ProgramLangEnum SampleList1, DateTime SampleDate) =>
+                {
+                    var _res = new Dictionary<string, object>
                     {
-                        {"String", SampleString},
-                        {"bool", SampleBool.ToString()},
-                        {"int", SampleInt.ToString()},
-                        {"date", SampleDate.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
-                        {"enum", SampleList.ToString()},
-                        {"enum1", SampleList1.ToString()}
+                            {"String", SampleString},
+                            {"bool", SampleBool.ToString()},
+                            {"int", SampleInt.ToString()},
+                            {"date", SampleDate.ToString("yyyy-MM-dd HH:mm:ss")}, // Ensuring proper date format
+                            {"enum", SampleList.ToString()},
+                            {"enum1", SampleList1.ToString()}
                     };
 
-                  return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
-              })
-           .WithName("Test123")
-           .WithOpenApi()
-           .AddWiDocApiEndpoints(new EndpointInfo
-           {
-               Group = "Test",
-               Description = "Test with string, int, bool , 2 enum and datime",
-               CacheDurationMinutes = 0,
-               EnumLists = EnumUtils.CreateEnumLists(
-                            ("SampleList", typeof(SampleEnum)),
-                            ("SampleList1", typeof(ProgramLangEnum))
-                           )
-           });
+                    return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
+                })
+                .WithName("Test123")
+                .WithOpenApi()
+                .AddWiDocApiEndpoints(new EndpointInfo
+                {
+                    Group = "Test",
+                    Description = "Test with string, int, bool, 2 enum, and datetime",
+                    CacheDurationMinutes = 0,
+                    EnumLists = EnumUtils.CreateEnumLists(
+                        ("SampleList", typeof(SampleEnum)),
+                        ("SampleList1", typeof(ProgramLangEnum))
+
+                    )
+                });
             //*********
 
-            group.MapGet("/Person/{SearchById:int}", async (int SearchById, SamplePersonsContext dbContext) =>
+            group.MapGet("/Person/{SearchById:int}", async (int SearchById, IPersonService personService) =>
             {
-                var _person = await dbContext.Persons.FindAsync(SearchById);
+                var _person = await personService.GetPersonByIdAsync(SearchById);
 
                 if (_person == null)
                 {
@@ -63,46 +70,67 @@ namespace WiDocApi_test.Endpoints
                 }
                 return Results.Ok(_person);
             })
-             .WithName("SearchById")
-             .WithOpenApi()
-             .AddWiDocApiEndpoints(new EndpointInfo
-             {
-                 Group = "GetPerson",
-                 Description = "Search person by ID",
-                 CacheDurationMinutes = 10,
-             });
-
-            group.MapGet("/Person/search/{SearchStartWithLastName}", async (string SearchStartWithLastName, SamplePersonsContext dbContext) =>
-            {
-                var _persons = await dbContext.Persons.Where(x => x.LastName.ToLower().StartsWith(SearchStartWithLastName.ToLower())).ToListAsync();
-
-                if (_persons == null)
-                {
-                    return Results.NotFound("Persons not found.");
-                }
-                return Results.Ok(_persons);
-            })
-            .WithName("SearchStartWithLastName")
+            .WithName("SearchById")
             .WithOpenApi()
             .AddWiDocApiEndpoints(new EndpointInfo
             {
                 Group = "GetPerson",
-                Description = "Search person by last name starting with",
+                Description = "Search person by ID",
                 CacheDurationMinutes = 10,
-                //Active = false,
             });
 
-            group.MapPost("/Person", async (Person newPerson, SamplePersonsContext dbContext) =>
-            {
-                // Add the new person to the database
-                dbContext.Persons.Add(newPerson);
-                await dbContext.SaveChangesAsync();
+            group.MapGet("/Person/search/{SearchStartWithLastName}/{StateList}",
+        async (string SearchStartWithLastName, string StateList, IPersonService personService) =>
+        {
+            // Use the injected personService here
 
-                // Return the created person with a 201 status code
-                return Results.Created($"/Person/{newPerson.PersonID}", newPerson);
+            var _persons = await personService.GetPersonsByLastNameAsync(SearchStartWithLastName, StateList);
+        
+
+            if (_persons == null)
+            {
+                return Results.NotFound("Persons not found.");
+            }
+            return Results.Ok(_persons);
+        })
+        .WithName("SearchStartWithLastName")
+        .WithOpenApi()
+        .AddWiDocApiEndpoints(new EndpointInfo
+        {
+            Group = "GetPerson",
+            Description = "Search person by last name starting with",
+            // Dynamically populate enum list from the database result
+            EnumLists = EnumUtils.DBToList("StateList", statelist)
+        });
+
+            group.MapGet("/States", async (IPersonService personService) =>
+            {
+                var _state = await personService.GetStateAsync();
+                var _res = new Dictionary<string, List<string>>();
+                _res.Add("StatesEnum", _state!);
+
+                if (_state == null)
+                {
+                    return Results.NotFound("State list is empty");
+                }
+                return Results.Ok(_state);
             })
-             .WithName("CreatePerson")
-             .WithOpenApi()
+            .WithName("States")
+            .WithOpenApi()
+            .AddWiDocApiEndpoints(new EndpointInfo
+            {
+                Group = "GetStates",
+                Description = "All States",
+                //CacheDurationMinutes = 10,
+            });
+
+            group.MapPost("/Person", async (Person newPerson, IPersonService personService) =>
+            {
+                var createdPerson = await personService.AddPersonAsync(newPerson);
+                return Results.Created($"/Person/{createdPerson.LastName}", createdPerson);
+            })
+            .WithName("CreatePerson")
+            .WithOpenApi()
             .AddWiDocApiEndpoints(new EndpointInfo
             {
                 Group = "RestPerson",
@@ -110,43 +138,14 @@ namespace WiDocApi_test.Endpoints
                 RequiresInput = false,
             });
 
-            group.MapPut("/Person/{ById:int}", async (int ById, Person updatedPerson, SamplePersonsContext dbContext) =>
+            group.MapPut("/Person/{ById:int}", async (int ById, Person updatedPerson, IPersonService personService) =>
             {
-                // Find the person by ID
-                var existingPerson = await dbContext.Persons.FindAsync(ById);
-
-                if (existingPerson == null)
+                var result = await personService.UpdatePersonAsync(ById, updatedPerson);
+                if (result == null)
                 {
                     return Results.NotFound("Person not found.");
                 }
-
-                // Update only the fields that are provided
-                if (!string.IsNullOrEmpty(updatedPerson.FirstName))
-                    existingPerson.FirstName = updatedPerson.FirstName;
-
-                if (!string.IsNullOrEmpty(updatedPerson.LastName))
-                    existingPerson.LastName = updatedPerson.LastName;
-
-                if (updatedPerson.Age.HasValue)
-                    existingPerson.Age = updatedPerson.Age;
-
-                if (!string.IsNullOrEmpty(updatedPerson.Gender))
-                    existingPerson.Gender = updatedPerson.Gender;
-
-                if (!string.IsNullOrEmpty(updatedPerson.Email))
-                    existingPerson.Email = updatedPerson.Email;
-
-                if (!string.IsNullOrEmpty(updatedPerson.State))
-                    existingPerson.State = updatedPerson.State;
-
-                if (!string.IsNullOrEmpty(updatedPerson.ZipCode))
-                    existingPerson.ZipCode = updatedPerson.ZipCode;
-
-                // Save changes to the database
-                await dbContext.SaveChangesAsync();
-
-                // Return NoContent to indicate successful update
-                return Results.Ok("person is updated successfully.");
+                return Results.Ok(result);
             })
             .WithName("UpdatePerson")
             .WithOpenApi()
@@ -156,34 +155,24 @@ namespace WiDocApi_test.Endpoints
                 Description = "Update a person by ID",
             });
 
-            group.MapDelete("/Person/{ById:int}", async (int ById, SamplePersonsContext dbContext) =>
+            group.MapDelete("/Person/{ById:int}", async (int ById, IPersonService personService) =>
             {
-                // Find the person by ID
-                var personToDelete = await dbContext.Persons.FindAsync(ById); ;
-
-                if (personToDelete == null)
+                var deleted = await personService.DeletePersonAsync(ById);
+                if (!deleted)
                 {
                     return Results.NotFound("Person not found.");
                 }
-
-                // Remove the person from the database
-                dbContext.Persons.Remove(personToDelete);
-                await dbContext.SaveChangesAsync();
-
-                // Return NoContent to indicate successful deletion
                 return Results.NoContent();
             })
-             .WithName("DeletePerson")
-             .WithOpenApi()
-             .AddWiDocApiEndpoints(new EndpointInfo
-              {
-                  Group = "RestPerson",
-                  Description = "Delete a person by ID"
-              });
-
-
-
+            .WithName("DeletePerson")
+            .WithOpenApi()
+            .AddWiDocApiEndpoints(new EndpointInfo
+            {
+                Group = "RestPerson",
+                Description = "Delete a person by ID"
+            });
         }
+
         public enum SampleEnum
         {
             Option1,
@@ -195,7 +184,7 @@ namespace WiDocApi_test.Endpoints
         {
             cobol,
             python,
-            csharp,
+            csharp
         }
     }
 }

@@ -1,3 +1,4 @@
+// Using directives at the top of your Program.cs
 using Microsoft.EntityFrameworkCore;
 using WiDocApi_test.Models;
 using WiDocApi_test.Components;
@@ -6,7 +7,7 @@ using WiDocApi_Blazor.WiDocApi.Helpers;
 using WiDocApi_test.Endpoints;
 using Microsoft.Extensions.Configuration;
 using static WiDocApi_test.Endpoints.PersonEndpoints;
-using WiDocApi_test.Helpers;
+using WiDocApi_test.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,22 +16,21 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddDbContext<SamplePersonsContext>(options =>
-             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-                     .LogTo(Console.WriteLine, LogLevel.Warning) // Set log level to Warning or higher
-                     .EnableSensitiveDataLogging(false)); // Disable sensitive
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .LogTo(Console.WriteLine, LogLevel.Information)
+           .EnableSensitiveDataLogging());
+
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 builder.Services.AddRouting(options =>
 {
     options.ConstraintMap.Add("sampleEnum", typeof(EnumRouteConstraint<SampleEnum>));
     options.ConstraintMap.Add("ProgramLangEnum", typeof(EnumRouteConstraint<ProgramLangEnum>));
+
+    // Register for state list with a non-generic string version of EnumRouteConstraint
+    
 });
-
-
 builder.Services.AddQuickGridEntityFrameworkAdapter();
-
-
-
-
 builder.Services.AddSiteWiDocApi();
 
 var app = builder.Build();
@@ -39,20 +39,14 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-
-app.PersonsEndpoints(builder.Configuration);
-
-
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+using var scope = app.Services.CreateScope();
+var personService = scope.ServiceProvider.GetRequiredService<IPersonService>();
+app.PersonsEndpoints(builder.Configuration, personService);
 app.Run();

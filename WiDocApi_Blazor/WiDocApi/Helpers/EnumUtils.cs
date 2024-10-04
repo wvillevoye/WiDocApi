@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +15,14 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
         {
             return new List<string>(Enum.GetNames(typeof(T)));
         }
+
+        public static Dictionary<string, List<string>> DBToList(string name , List<string> listDb)
+        {
+            var _res = new Dictionary<string, List<string>>();
+            _res.Add(name, listDb!);
+            return _res;
+        }
+
 
         // Method to create a dictionary of enum lists
         public static Dictionary<string, List<string>> CreateEnumLists(params (string key, Type enumType)[] enums)
@@ -35,4 +45,23 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
             return enumLists;
         }
     }
+
+    public class EnumRouteConstraint<T> : IRouteConstraint where T : struct, Enum
+    {
+        public bool Match(HttpContext? httpContext,
+                          IRouter? route,
+                          string routeKey,
+                          RouteValueDictionary values,
+                          RouteDirection routeDirection)
+        {
+            if (values.TryGetValue(routeKey, out var value) && value is string stringValue)
+            {
+                // Try to parse the enum from the string
+                return Enum.TryParse<T>(stringValue, true, out _);
+            }
+            return false;
+        }
+    }
+    
+
 }

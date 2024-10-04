@@ -86,11 +86,24 @@
 
                                                 break;
 
-
-
-
+                                               
                                             default:
-                                                <input type="text" @bind="endpoint.DynamicInputValues[param.ParameterName]" placeholder="Enter @param.ParameterName..." class="form-control" />
+                                                if (param.ParameterName.ToLower().Contains("list"))
+                                                {
+                                                    <select @bind="endpoint.DynamicInputValues[param.ParameterName]" class="form-select w-100" style="max-width: 300px;">
+                                                        <option value="" disabled selected>--select--</option>
+                                                        @foreach (var enumValue in endpoint.EnumLists[param.ParameterName])
+                                                        {
+                                                            <option value="@enumValue">@enumValue</option>
+                                                        }
+                                                    </select>
+                                                }
+                                                else
+                                                {
+
+
+                                                    <input type="text" @bind="endpoint.DynamicInputValues[param.ParameterName]" placeholder="Enter @param.ParameterName..." class="form-control" />
+                                                }
                                                 break;
                                         }
                                     </dd>
