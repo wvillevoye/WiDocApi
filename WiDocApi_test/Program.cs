@@ -27,8 +27,8 @@ builder.Services.AddRouting(options =>
     options.ConstraintMap.Add("sampleEnum", typeof(EnumRouteConstraint<SampleEnum>));
     options.ConstraintMap.Add("ProgramLangEnum", typeof(EnumRouteConstraint<ProgramLangEnum>));
 
-    // Register for state list with a non-generic string version of EnumRouteConstraint
-    
+  
+
 });
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 builder.Services.AddSiteWiDocApi();
@@ -46,7 +46,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+
 using var scope = app.Services.CreateScope();
 var personService = scope.ServiceProvider.GetRequiredService<IPersonService>();
-app.PersonsEndpoints(builder.Configuration, personService);
+var statelist = await personService.GetStateAsync();
+
+app.PersonsEndpoints(builder.Configuration, statelist);
+
+
 app.Run();

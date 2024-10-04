@@ -10,40 +10,32 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 {
     public static class EnumUtils
     {
-        // Method to get the names of the enum as a list of strings
-        public static List<string> EnumToList<T>() where T : Enum
-        {
-            return new List<string>(Enum.GetNames(typeof(T)));
-        }
+      
 
-        public static Dictionary<string, List<string>> DBToList(string name , List<string> listDb)
+        public static Dictionary<string, List<string>> DBToList(string name, List<string> listDb)
         {
-            var _res = new Dictionary<string, List<string>>();
-            _res.Add(name, listDb!);
-            return _res;
+            var result = new Dictionary<string, List<string>>();
+            result.Add(name, listDb!);
+            return result;
         }
 
 
-        // Method to create a dictionary of enum lists
-        public static Dictionary<string, List<string>> CreateEnumLists(params (string key, Type enumType)[] enums)
-        {
-            var enumLists = new Dictionary<string, List<string>>();
 
-            foreach (var (key, enumType) in enums)
+
+        public static Dictionary<string, List<string>> EnumToDictionary<T>() where T : Enum
+        {
+            var enumTypeName = typeof(T).Name;
+            var enumValues = Enum.GetNames(typeof(T)).ToList();
+
+            // Create the dictionary with the enum name as the key and the list of enum values as the value
+            var result = new Dictionary<string, List<string>>
             {
-                // Get the method info for EnumToList<T>
-                var methodInfo = typeof(EnumUtils).GetMethod(nameof(EnumToList), new Type[0]);
+                { enumTypeName, enumValues }
+            };
 
-                // Make a generic method for the enum type
-                var genericMethod = methodInfo!.MakeGenericMethod(enumType);
-
-                // Invoke the generic method
-                var enumList = (List<string>)genericMethod.Invoke(null, null)!;
-                enumLists[key] = enumList;
-            }
-
-            return enumLists;
+            return result;
         }
+
     }
 
     public class EnumRouteConstraint<T> : IRouteConstraint where T : struct, Enum
@@ -62,6 +54,14 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
             return false;
         }
     }
-    
+    public static class DictionaryExtensions
+    {
+        public static Dictionary<string, List<string>> AddWithChain(
+            this Dictionary<string, List<string>> dictionary, string key, List<string> value)
+        {
+            dictionary.Add(key, value);
+            return dictionary; // Return the dictionary to enable chaining
+        }
+    }
 
 }

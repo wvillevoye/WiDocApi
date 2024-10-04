@@ -16,6 +16,8 @@ namespace WiDocApi_Blazor.WiDocApi.Models
 
         public Dictionary<string, List<string>> EnumLists { get; set; } = new();
 
+      
+
         public bool Active { get; set; } = true;
 
     }
