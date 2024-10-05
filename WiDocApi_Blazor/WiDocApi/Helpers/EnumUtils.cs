@@ -10,30 +10,43 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 {
     public static class EnumUtils
     {
-      
 
-        public static Dictionary<string, List<string>> DBToList(string name, List<string> listDb)
+
+        //public static Dictionary<string, List<string>> DBToList(string name, List<string> listDb)
+        //{
+        //    var result = new Dictionary<string, List<string>>();
+        //    result.Add(name, listDb!);
+        //    return result;
+        //}
+
+        public static Dictionary<string, Dictionary<string, string>> DBToList(string name, Dictionary<string, string> listDb)
         {
-            var result = new Dictionary<string, List<string>>();
-            result.Add(name, listDb!);
+            var result = new Dictionary<string, Dictionary<string, string>>();
+            result.Add(name, listDb);
             return result;
         }
 
 
-
-
-        public static Dictionary<string, List<string>> EnumToDictionary<T>() where T : Enum
+        public static Dictionary<string, Dictionary<string, string>> EnumToDictionary<T>() where T : Enum
         {
             var enumTypeName = typeof(T).Name;
-            var enumValues = Enum.GetNames(typeof(T)).ToList();
 
-            // Create the dictionary with the enum name as the key and the list of enum values as the value
-            var result = new Dictionary<string, List<string>>
-            {
+            // Convert enum names to a dictionary where the key and value are the same
+            var enumValues = Enum.GetNames(typeof(T)).ToDictionary(name => name, name => name);
+
+            // Create the dictionary with the enum type name as the key and the dictionary of enum values
+            var result = new Dictionary<string, Dictionary<string, string>>
+            {           
                 { enumTypeName, enumValues }
             };
 
-            return result;
+                return result;
+        }
+      
+        
+        public static Dictionary<string, string> ListToDictionary(List<string> list)
+        {
+            return list.ToDictionary(item => item, item => item);
         }
 
     }
@@ -53,14 +66,48 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
             }
             return false;
         }
+        
     }
     public static class DictionaryExtensions
     {
-        public static Dictionary<string, List<string>> AddWithChain(
-            this Dictionary<string, List<string>> dictionary, string key, List<string> value)
+        public static Dictionary<string, Dictionary<string, string>> AddWithChain(
+            this Dictionary<string, Dictionary<string, string>> dictionary, string key, Dictionary<string, string> value)
         {
-            dictionary.Add(key, value);
+            if (!dictionary.ContainsKey(key))
+            {
+                // Add the key and value if the key doesn't already exist
+                dictionary.Add(key, value);
+            }
+            else
+            {
+                // If the key exists, merge the new dictionary with the existing one
+                foreach (var item in value)
+                {
+                    dictionary[key][item.Key] = item.Value; // This updates existing keys or adds new ones
+                }
+            }
+
             return dictionary; // Return the dictionary to enable chaining
+        }
+    }
+
+    public class SelectConstraint : IRouteConstraint
+    {
+        public bool Match(HttpContext? httpContext, IRouter? route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
+        {
+            // Check if the route key exists in the values
+            if (values.TryGetValue(routeKey, out var value) && value is string stringValue)
+            {
+                // Allow any string value as valid
+                return true; // Allows any string
+
+                // If you want to add some specific conditions, you can still do that.
+                // Example:
+                // return stringValue == "select" || stringValue == "option1" || stringValue == "option2" || true;
+            }
+
+            // If the key doesn't exist or isn't a string, return false
+            return false;
         }
     }
 

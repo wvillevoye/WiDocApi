@@ -74,13 +74,13 @@
                                                        class="form-control w-100" style="max-width: 300px;" />
                                                 
                                                 break;
-                                            case string type when type.ToLower().Contains("enum"):
+                                            case "select":
 
                                                 <select @bind="endpoint.DynamicInputValues[param.ParameterName]" class="form-select w-100" style="max-width: 300px;">
                                                     <option value="" disabled selected>--select--</option>
                                                     @foreach (var enumValue in endpoint.EnumLists[param.ParameterName])
                                                     {
-                                                        <option value="@enumValue">@enumValue</option>
+                                                        <option value="@enumValue.Value">@enumValue.Key</option>
                                                     }
                                                 </select>
 
@@ -88,22 +88,11 @@
 
                                                
                                             default:
-                                                if (param.ParameterName.ToLower().Contains("list"))
-                                                {
-                                                    <select @bind="endpoint.DynamicInputValues[param.ParameterName]" class="form-select w-100" style="max-width: 300px;">
-                                                        <option value="" disabled selected>--select--</option>
-                                                        @foreach (var enumValue in endpoint.EnumLists[param.ParameterName])
-                                                        {
-                                                            <option value="@enumValue">@enumValue</option>
-                                                        }
-                                                    </select>
-                                                }
-                                                else
-                                                {
+                                               
 
 
                                                     <input type="text" @bind="endpoint.DynamicInputValues[param.ParameterName]" placeholder="Enter @param.ParameterName..." class="form-control" />
-                                                }
+                                              
                                                 break;
                                         }
                                     </dd>

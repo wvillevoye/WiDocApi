@@ -23,8 +23,12 @@ namespace WiDocApi_Blazor.Configuration.WiDocApi
             services.AddScoped<HttpMethodClassMapper>();
             services.AddScoped<SessionStorageService>();
             services.AddScoped<ExtractParameters>();
-            
             services.AddSingleton<ApiStateService>();
+
+            services.AddRouting(options =>
+            {
+                options.ConstraintMap.Add("select", typeof(SelectConstraint));
+            });
 
         }
 

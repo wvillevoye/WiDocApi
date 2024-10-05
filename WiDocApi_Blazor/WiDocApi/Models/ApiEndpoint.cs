@@ -65,7 +65,7 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         public string? Curl { get; set; }
 
 
-        public Dictionary<string, List<string>> EnumLists { get; set; } = new();
+        public Dictionary<string, Dictionary<string, string>> EnumLists { get; set; } = new();
 
 
         private Dictionary<string, string> _dynamicInputValues = new();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System;
 using System.Text.Json;
 using WiDocApi_Blazor.WiDocApi.Helpers;
@@ -12,7 +13,7 @@ namespace WiDocApi_test.Endpoints
 {
     public static class PersonEndpoints
     {
-        public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration, List<string> states)
+        public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration, Dictionary<string,string> states)
         {
             var baseurlApi = "api/";
             var group = endpoints.MapGroup(baseurlApi)
@@ -24,7 +25,7 @@ namespace WiDocApi_test.Endpoints
             }
            
             //********
-            group.MapGet("/Person/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:SampleEnum}/{SampleList1:ProgramLangEnum}/{SampleDate:datetime}/{StatesList}",
+            group.MapGet("/Person/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:select}/{SampleList1:select}/{SampleDate:datetime}/{StatesList:select}",
                 (string SampleString, bool SampleBool, int SampleInt, SampleEnum SampleList, ProgramLangEnum SampleList1, DateTime SampleDate, string StatesList) =>
                 {
                     var _res = new Dictionary<string, object>
@@ -73,7 +74,7 @@ namespace WiDocApi_test.Endpoints
             });
 
 
-            group.MapGet("/Person/search/{SearchStartWithLastName}/{StatesList}",
+            group.MapGet("/Person/search/{SearchStartWithLastName}/{StatesList:select}",
                 async (string SearchStartWithLastName, string StatesList, IPersonService personService) =>
             {
                 // Use the injected personService here
