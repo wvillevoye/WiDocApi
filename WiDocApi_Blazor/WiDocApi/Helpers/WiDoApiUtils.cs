@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
@@ -8,23 +9,46 @@ using System.Threading.Tasks;
 
 namespace WiDocApi_Blazor.WiDocApi.Helpers
 {
-    public static class EnumUtils
+    public static class WiDoApiUtils
     {
 
 
-        //public static Dictionary<string, List<string>> DBToList(string name, List<string> listDb)
-        //{
-        //    var result = new Dictionary<string, List<string>>();
-        //    result.Add(name, listDb!);
-        //    return result;
-        //}
 
-        public static Dictionary<string, Dictionary<string, string>> DBToList(string name, Dictionary<string, string> listDb)
+
+     
+
+        private static Dictionary<string, Dictionary<string, T>> BuildSelectDictionary<T>(string name, Dictionary<string, T> listDb)
         {
-            var result = new Dictionary<string, Dictionary<string, string>>();
+            var result = new Dictionary<string, Dictionary<string, T>>();
             result.Add(name, listDb);
             return result;
         }
+        public enum SelectValueType
+        {
+            Text,
+            Number
+        }
+
+        public static Dictionary<string, Dictionary<string, T>> CreateSelectInput<T>(string name, SelectValueType inputType, Dictionary<string, T> listDb)
+        {
+            if (inputType == SelectValueType.Number && typeof(T) == typeof(int))
+            {
+                // Cast to Dictionary<string, int> if inputType is Number
+                var intDict = listDb as Dictionary<string, int>;
+                return BuildSelectDictionary(name, intDict as Dictionary<string, T>);
+            }
+            else if (inputType == SelectValueType.Text && typeof(T) == typeof(string))
+            {
+                // Cast to Dictionary<string, string> if inputType is Text
+                var stringDict = listDb as Dictionary<string, string>;
+                return BuildSelectDictionary(name, stringDict as Dictionary<string, T>);
+            }
+
+            throw new ArgumentException("Invalid input type or dictionary type mismatch.");
+        }
+
+
+
 
 
         public static Dictionary<string, Dictionary<string, string>> EnumToDictionary<T>() where T : Enum
@@ -51,37 +75,26 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 
     }
 
-    public class EnumRouteConstraint<T> : IRouteConstraint where T : struct, Enum
-    {
-        public bool Match(HttpContext? httpContext,
-                          IRouter? route,
-                          string routeKey,
-                          RouteValueDictionary values,
-                          RouteDirection routeDirection)
-        {
-            if (values.TryGetValue(routeKey, out var value) && value is string stringValue)
-            {
-                // Try to parse the enum from the string
-                return Enum.TryParse<T>(stringValue, true, out _);
-            }
-            return false;
-        }
-        
-    }
+
     public static class DictionaryExtensions
     {
-        public static Dictionary<string, Dictionary<string, string>> AddWithChain(
-            this Dictionary<string, Dictionary<string, string>> dictionary, string key, Dictionary<string, string> value)
+        public static Dictionary<string, Dictionary<string, T>> AddWithChain<T>(
+            this Dictionary<string, Dictionary<string, T>> dictionary,
+            string key,
+            WiDoApiUtils.SelectValueType inputType,
+            Dictionary<string, T> value)
         {
+            var newEntry = WiDoApiUtils.CreateSelectInput(key, inputType, value); // Use CreateSelectInput
+
             if (!dictionary.ContainsKey(key))
             {
                 // Add the key and value if the key doesn't already exist
-                dictionary.Add(key, value);
+                dictionary.Add(key, newEntry[key]);
             }
             else
             {
                 // If the key exists, merge the new dictionary with the existing one
-                foreach (var item in value)
+                foreach (var item in newEntry[key])
                 {
                     dictionary[key][item.Key] = item.Value; // This updates existing keys or adds new ones
                 }

@@ -23,14 +23,7 @@ builder.Services.AddDbContext<SamplePersonsContext>(options =>
 
 builder.Services.AddScoped<IPersonService, PersonService>();
 
-//builder.Services.AddRouting(options =>
-//{
-//    //options.ConstraintMap.Add("sampleEnum", typeof(EnumRouteConstraint<SampleEnum>));
-//    //options.ConstraintMap.Add("ProgramLangEnum", typeof(EnumRouteConstraint<ProgramLangEnum>));
-//    options.ConstraintMap.Add("select", typeof(SelectConstraint));
 
-
-//});
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 builder.Services.AddSiteWiDocApi();
 
@@ -51,7 +44,7 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 using var scope = app.Services.CreateScope();
 var personService = scope.ServiceProvider.GetRequiredService<IPersonService>();
 var statelist = await personService.GetStateAsync();
-var Selectstatelist = WiDocApi_Blazor.WiDocApi.Helpers.EnumUtils.ListToDictionary(statelist);
+var Selectstatelist = WiDocApi_Blazor.WiDocApi.Helpers.WiDoApiUtils.ListToDictionary(statelist);
 
 
 

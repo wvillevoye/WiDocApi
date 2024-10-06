@@ -48,9 +48,9 @@ namespace WiDocApi_test.Endpoints
                     Group = "Test",
                     Description = "Test with string, int, bool, 2 enum, and datetime",
                     CacheDurationMinutes = 0,
-                    EnumLists = EnumUtils.DBToList("SampleList", EnumUtils.EnumToDictionary<SampleEnum>()["SampleEnum"])
-                                         .AddWithChain("SampleList1", EnumUtils.EnumToDictionary<ProgramLangEnum>()["ProgramLangEnum"])
-                                         .AddWithChain("StatesList", states)
+                    EnumLists = WiDoApiUtils.CreateSelectInput("SampleList",WiDoApiUtils.SelectValueType.Text, WiDoApiUtils.EnumToDictionary<SampleEnum>()["SampleEnum"])
+                                         .AddWithChain("SampleList1", WiDoApiUtils.SelectValueType.Text, WiDoApiUtils.EnumToDictionary<ProgramLangEnum>()["ProgramLangEnum"])
+                                         .AddWithChain("StatesList", WiDoApiUtils.SelectValueType.Text, states)
                 });
             //*********
 
@@ -74,12 +74,12 @@ namespace WiDocApi_test.Endpoints
             });
 
 
-            group.MapGet("/Person/search/{SearchStartWithLastName}/{StatesList:select}",
-                async (string SearchStartWithLastName, string StatesList, IPersonService personService) =>
+            group.MapGet("/Person/search/{SearchStartWithLastName}/{State:select}",
+                async (string SearchStartWithLastName, string State, IPersonService personService) =>
             {
                 // Use the injected personService here
 
-                var _persons = await personService.GetPersonsByLastNameAsync(SearchStartWithLastName, StatesList);
+                var _persons = await personService.GetPersonsByLastNameAsync(SearchStartWithLastName, State);
 
 
                 if (_persons == null)
@@ -94,7 +94,7 @@ namespace WiDocApi_test.Endpoints
             {
                 Group = "GetPerson",
                 Description = "Search person by last name starting with",
-                EnumLists = EnumUtils.DBToList("StatesList", states)
+                EnumLists = WiDoApiUtils.CreateSelectInput("State", WiDoApiUtils.SelectValueType.Text, states)
 
             });
 
@@ -103,9 +103,6 @@ namespace WiDocApi_test.Endpoints
             group.MapGet("/States", async (IPersonService personService) =>
         {
                 var _state = await personService.GetStateAsync();
-                var _res = new Dictionary<string, List<string>>();
-                _res.Add("StatesEnum", _state!);
-
                 if (_state == null)
                 {
                     return Results.NotFound("State list is empty");

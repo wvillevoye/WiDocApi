@@ -67,7 +67,11 @@ public static class RouteHandlerBuilderExtensions
 
         return builder;
     }
-
+    //public static string CleanApiRoute(string route)
+    //{
+    //    // Use a regular expression to remove everything between { and } including :
+    //    return System.Text.RegularExpressions.Regex.Replace(route, @"\{([^:]+):[^}]+\}", "$1").Replace("{", "").Replace("}", "");
+    //}
 
 
     // Method to parse HTTP methods
