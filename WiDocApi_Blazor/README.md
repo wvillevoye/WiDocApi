@@ -1,15 +1,15 @@
 ﻿# WiDocApi
-> ### This version now includes specific examples of both `ApiEndpoints.json` and `appsettings.json` to give users clear instructions on how to configure and use the API settings.
-### This updated version includes the mention of the **WiDocApi_test** project, which provides an example of how to integrate the WiDocApi library into a Blazor app.
-**WiDocApi** is a Blazor .NET 8 program built as a Razor Class Library that provides a Swagger-like interface for API documentation and interaction. The project supports API key integration and manages API calls through a JSON configuration file in the `Endpoints` directory of the main Blazor application.
+
+
+> #### This updated version includes the mention of the **WiDocApi_test** project, which provides an example of how to integrate the WiDocApi library into a Blazor app.
+**WiDocApi** is a Blazor .NET 8 program built as a Razor Class Library that provides a Swagger-like interface for API documentation and interaction. The project supports API key integration and manages API calls through the `Endpoints` directory of the main Blazor application.
 
 ## Features
 
 - **Swagger-like Interface**: WiDocApi offers an easy-to-use interface for exploring and testing API endpoints.
 - **API Key Integration**: API calls are secured using an API key stored in the `appsettings.json` file.
 - **Single Razor Component Page**: The interface is rendered as a single Razor component, making it easy to integrate.
-- **JSON-Based API Configuration**: API calls are defined in an `apisettings.json` file, enabling easy management of endpoints.
-
+- **Package Download**:$ dotnet add package WiDocApi_blazor --version 2.1.0.
 
 To create a new Blazor project with the WiDocApi library, follow these steps:
 - Create a new Blazor Web App project.
@@ -24,7 +24,7 @@ To create a new Blazor project with the WiDocApi library, follow these steps:
 ![Afbeelding](assets/Afbeelding1.png)
 
 > #### download the WiDocApi library from my GitHub https://github.com/wvillevoye/WiDocApi/pkgs/nuget/WiDocApi_blazor
-
+-- $ dotnet add package WiDocApi_blazor --version 2.1.0
 ## Create Endpoints in your blazor project:
 
 
@@ -50,7 +50,6 @@ public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfi
 - For version 2.0.0 it is possible to specify the type for the endpoints, for example :int :bool :select :datatime
 see an example below
 - it is possible to download your endpoints result.
-- it is to use the enum in the endpoint you must add the EnumUtils class to your project Please note that with Name:enum the enum must always be named, for example Cars:CarsEnum:
 
 ### Create in your blazor a new component and add the following code:
 ```csharp
