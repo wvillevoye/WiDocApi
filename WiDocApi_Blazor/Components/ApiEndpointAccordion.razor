@@ -22,7 +22,7 @@
                             <span class="@HttpMethodClassMapper.GetClasses(endpoint.HttpMethod.ToString()!).buttonClass">@endpoint.HttpMethod</span>
                         </div>
                         <div class="col-sm-auto">
-                            <span class="mb-0 small-text-path">@endpoint.Path</span>
+                            <span class="mb-0 small-text-path">@CleanApiRoute(endpoint.Path)</span>
                         </div>
                     </div>
 
@@ -68,7 +68,7 @@
                                                        class="form-check-input" />
                                                  break;
                                             case "datetime":
-                                                <input type="datetime-local"
+                                                <input type="datetime-local" step="1"
                                                         value=""
                                                        @onchange="(e) => SetDateTimeValue(DateTime.Parse(e.Value!.ToString()!), param.ParameterName, endpoint)"
                                                        class="form-control w-100" style="max-width: 300px;" />
@@ -78,7 +78,7 @@
 
                                                 <select @bind="endpoint.DynamicInputValues[param.ParameterName]" class="form-select w-100" style="max-width: 300px;">
                                                     <option value="" disabled selected>--select--</option>
-                                                    @foreach (var enumValue in endpoint.EnumLists[param.ParameterName])
+                                                    @foreach (var enumValue in endpoint.SelectLists[param.ParameterName])
                                                     {
                                                         <option value="@enumValue.Value">@enumValue.Key</option>
                                                     }
@@ -198,6 +198,11 @@
             await JsInterop.DisposeAsync();
         }
     }
-   
+    private static string CleanApiRoute(string route)
+    {
+       // Use a regular expression to remove everything between { and } including :
+       return System.Text.RegularExpressions.Regex.Replace(route, @"\{([^:]+):[^}]+\}", "$1").Replace("{", "").Replace("}", "");
+    }
+
 }
 

@@ -33,7 +33,7 @@ public static class RouteHandlerBuilderExtensions
                 Description = endpointInfo.Description,
                 RequiresInput = endpointInfo.RequiresInput,
                 CacheDurationMinutes = endpointInfo.CacheDurationMinutes,
-                EnumLists = endpointInfo.EnumLists,
+                SelectLists = endpointInfo.SelectLists,
 
                 Active = endpointInfo.Active
             };
@@ -67,12 +67,7 @@ public static class RouteHandlerBuilderExtensions
 
         return builder;
     }
-    //public static string CleanApiRoute(string route)
-    //{
-    //    // Use a regular expression to remove everything between { and } including :
-    //    return System.Text.RegularExpressions.Regex.Replace(route, @"\{([^:]+):[^}]+\}", "$1").Replace("{", "").Replace("}", "");
-    //}
-
+   
 
     // Method to parse HTTP methods
     private static WiDocApiHttpMethod ParseHttpMethod(string httpMethod)

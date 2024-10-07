@@ -20,7 +20,24 @@
             <div id="collapse-@index" class="accordion-collapse collapse" aria-labelledby="heading-@index" data-bs-parent="#accordionModels">
                 <div class="accordion-body">
                     <div class="accordion" id="TestAcc">
-                        
+                      <div class=" pt-1"> 
+                            <button class="btn btn-primary btn-sm mt-3" @onclick="ToggleJsonVisibility">
+                                @if (showJson)
+                                {
+                                    <i class="bi bi-eye-slash"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-eye"></i>
+                                }
+                            </button>
+
+                            @if (showJson && !string.IsNullOrEmpty(sampleJson))
+                            {
+                                <pre>@sampleJson</pre>
+                            }
+                        </div>
+
 
                         @foreach (var description in GetPropertyDescriptions(model))
                         {
@@ -33,6 +50,7 @@
                                         <i class="bi bi-filetype-key  px-1"></i><b>@description.Name</b>
                                     </button>
                                 </h2>
+                                
                                 <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush">
@@ -63,11 +81,9 @@
                             </div>
                         }
                     </div>
-                    <button class="btn btn-primary btn-sm mt-3" @onclick="@(() => GenerateSampleJson(model))"><i class="bi bi-filetype-json"></i></button>
-                    @if (!string.IsNullOrEmpty(sampleJson))
-                    {
-                        <pre>@sampleJson</pre>
-                    }
+                    @* <button class="btn btn-primary btn-sm mt-3" @onclick="@(() => GenerateSampleJson(model))"><i class="bi bi-filetype-json"></i></button> *@
+
+                    
                 </div>
             </div>
         </div>
@@ -77,7 +93,11 @@
 @code {
     [Parameter]
     public List<T>? classModels { get; set; } = new();
+    [Parameter]
+    public object? Model { get; set; }
 
+
+    private bool showJson = false;
     private string? sampleJson;
 
     private List<Descriptions> GetPropertyDescriptions(object model)
@@ -118,10 +138,27 @@
                     });
             }
         }
-
+        Model = model;
         return descriptions;
     }
 
+    
+    private void ToggleJsonVisibility()
+    {
+        if (!showJson)
+        {
+            // Generate JSON if it's not generated yet
+            if (string.IsNullOrEmpty(sampleJson))
+            {
+                GenerateSampleJson(Model!);
+            }
+        }
+
+        // Toggle the visibility state
+        showJson = !showJson;
+    }
+
+    
     private void GenerateSampleJson(object model)
     {
         sampleJson = CreateSampleJson(model);

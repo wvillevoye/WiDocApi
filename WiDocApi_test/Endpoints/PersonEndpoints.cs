@@ -48,7 +48,7 @@ namespace WiDocApi_test.Endpoints
                     Group = "Test",
                     Description = "Test with string, int, bool, 2 enum, and datetime",
                     CacheDurationMinutes = 0,
-                    EnumLists = WiDoApiUtils.CreateSelectInput("SampleList",WiDoApiUtils.SelectValueType.Text, WiDoApiUtils.EnumToDictionary<SampleEnum>()["SampleEnum"])
+                    SelectLists = WiDoApiUtils.CreateSelectInput("SampleList",WiDoApiUtils.SelectValueType.Text, WiDoApiUtils.EnumToDictionary<SampleEnum>()["SampleEnum"])
                                          .AddWithChain("SampleList1", WiDoApiUtils.SelectValueType.Text, WiDoApiUtils.EnumToDictionary<ProgramLangEnum>()["ProgramLangEnum"])
                                          .AddWithChain("StatesList", WiDoApiUtils.SelectValueType.Text, states)
                 });
@@ -94,7 +94,7 @@ namespace WiDocApi_test.Endpoints
             {
                 Group = "GetPerson",
                 Description = "Search person by last name starting with",
-                EnumLists = WiDoApiUtils.CreateSelectInput("State", WiDoApiUtils.SelectValueType.Text, states)
+                SelectLists = WiDoApiUtils.CreateSelectInput("State", WiDoApiUtils.SelectValueType.Text, states)
 
             });
 

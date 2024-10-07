@@ -13,11 +13,7 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         public bool RequiresInput { get; set; } = true;
         [Range(0, int.MaxValue, ErrorMessage = "Cache duration must be a non-negative value.")]
         public int CacheDurationMinutes { get; set; } = 0;
-
-        public Dictionary<string, Dictionary<string, string>> EnumLists { get; set; } = [];
-
-      
-
+        public Dictionary<string, Dictionary<string, string>> SelectLists { get; set; } = [];
         public bool Active { get; set; } = true;
 
     }
