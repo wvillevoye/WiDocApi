@@ -63,7 +63,7 @@
                                                 <input type="number" @bind="endpoint.DynamicInputValues[param.ParameterName]" style="width:100px" placeholder="Enter @param.ParameterName..." class="form-control" />
                                                 break;
                                             case "bool":
-                                                <input type="checkbox" checked="@endpoint.DynamicInputValues[param.ParameterName])"
+                                                <input type="checkbox" 
                                                        @onchange="(e) => SetDynamicInputValue(e, param.ParameterName, endpoint)"
                                                        class="form-check-input" />
                                                  break;
