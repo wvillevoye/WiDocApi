@@ -13,7 +13,7 @@ namespace WiDocApi_Blazor.Configuration.WiDocApi
 
             if (!services.Any(service => service.ServiceType == typeof(HttpClient)))
             {
-                // Voeg HttpClient toe aan de service collection als het nog niet is toegevoegd
+              
                 services.AddScoped(sp => new HttpClient());
             }
             services.AddScoped<WiDocApiScript>();

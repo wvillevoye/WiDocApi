@@ -12,6 +12,13 @@ using System.Collections.Specialized;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//builder.WebHost.ConfigureKestrel(serverOptions =>
+//{
+//    serverOptions.ListenAnyIP(5001, listenOptions =>
+//    {
+//        listenOptions.UseHttps("/https/certificate.pfx", "Password1234!");
+//    });
+//});
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
