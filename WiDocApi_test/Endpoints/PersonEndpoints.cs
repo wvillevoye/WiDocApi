@@ -19,9 +19,9 @@ namespace WiDocApi_test.Endpoints
             var group = endpoints.MapGroup(baseurlApi)
                 .WithTags("Persons");
 
-            if (!string.IsNullOrEmpty(configuration["ApiSettings:ValidApiKey"]))
+            if ( !string.IsNullOrEmpty(configuration.GetSection("WiDocApiKeySetting.ApiKey").Value))
             {
-                group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
+                group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();
             }
            
             //********

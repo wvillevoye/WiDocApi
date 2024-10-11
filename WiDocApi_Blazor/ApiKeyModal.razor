@@ -3,6 +3,7 @@
 @inject IJSRuntime jsRuntime
 @inject NavigationManager Navigation
 @inject SessionStorageService SessionService;
+@inject WiDocApiApikeySettings ApikeySettings;
 
 @if (isVisible)
 {
@@ -57,7 +58,7 @@
 
     private async void ValidateApiKey()
     {
-        var validApiKey = Configuration["ApiSettings:ValidApiKey"];
+        var validApiKey = ApikeySettings.ApiKey;
         if (inputApiKey == validApiKey)
         {
 

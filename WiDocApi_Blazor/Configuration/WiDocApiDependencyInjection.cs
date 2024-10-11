@@ -2,13 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using WiDocApi_Blazor;
 using WiDocApi_Blazor.WiDocApi.Helpers;
+using WiDocApi_Blazor.WiDocApi.Models;
 using WiDocApi_Blazor.WiDocApi.Services;
 
 namespace WiDocApi_Blazor.Configuration.WiDocApi
 {
     public class WiDocApiDependencyInjection : IDependency
     {
-        public void AddDependencies(IServiceCollection services)
+        public void AddDependencies(IServiceCollection services, WiDocApiApikeySettings apikeySettings)
         {
 
             if (!services.Any(service => service.ServiceType == typeof(HttpClient)))
@@ -17,12 +18,14 @@ namespace WiDocApi_Blazor.Configuration.WiDocApi
                 services.AddScoped(sp => new HttpClient());
             }
             services.AddScoped<WiDocApiScript>();
-            services.AddScoped<ApiKeyAuthFilter>();
+            services.AddScoped<WiDocApiApiKeyAuthFilter>();
             services.AddScoped<StartEndpoint>();
             services.AddScoped<LoadEndpoints>();
             services.AddScoped<HttpMethodClassMapper>();
             services.AddScoped<SessionStorageService>();
             services.AddScoped<ExtractParameters>();
+            services.AddScoped(sp => apikeySettings);
+
             services.AddSingleton<ApiStateService>();
 
             services.AddRouting(options =>

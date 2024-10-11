@@ -1,23 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using WiDocApi_Blazor.WiDocApi.Models;
 
 namespace WiDocApi_Blazor.WiDocApi.Helpers
 {
-    public class ApiKeyAuthFilter : IEndpointFilter
+    public class WiDocApiApiKeyAuthFilter : IEndpointFilter
     {
         private readonly string _validApiKey;
-        private const string ApiKeyHeaderName = "X-Api-Key";
+        private WiDocApiApikeySettings? _apikeySettings;
 
-        public ApiKeyAuthFilter(IConfiguration configuration)
+        public WiDocApiApiKeyAuthFilter(WiDocApiApikeySettings apikeySettings)
         {
-            _validApiKey = configuration["ApiSettings:ValidApiKey"]!;
+            _apikeySettings = apikeySettings;
+
+            _validApiKey = _apikeySettings!.ApiKey!;
         }
 
         public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
         {
             var httpContext = context.HttpContext;
 
-            if (!httpContext.Request.Headers.TryGetValue(ApiKeyHeaderName, out var extractedApiKey))
+            if (!httpContext.Request.Headers.TryGetValue(_apikeySettings!.ApiKeyHeaderName!, out var extractedApiKey))
             {
                 httpContext.Response.StatusCode = 401;
                 return Results.Unauthorized();

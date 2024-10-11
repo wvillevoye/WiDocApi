@@ -8,7 +8,7 @@
 @inject SessionStorageService sessionService
 @inject ApiStateService ApiState
 @inject ExtractParameters ExtractParameters
-
+@inject WiDocApiApikeySettings ApikeySettings
 
 
         <ApiKeyModal @ref="apiKeyModal" />
@@ -33,7 +33,7 @@
             @if (IsValidApiKeyConfigured())
             {
                 <div class="col-md-12 text-end">
-                    @if (checkApiKey)
+                    @if (isValid)
                     {
                         <button class="btn btn-secondary" @onclick="() => apiKeyModal.Show()">Authorize  <i class="bi bi-lock"></i></button>
                     }
@@ -73,38 +73,38 @@
     [Parameter]
     public string jsonFilePath { get; set; } = "ApiEndpoints.json";
     private List<GroupedApiEndpoints> groupedEndpoints = new List<GroupedApiEndpoints>();
-    private bool isValid { get; set; }
+    private bool isValid { get; set; } = true;
     private ApiKeyModal? apiKeyModal;
     private string baseUrl => string.IsNullOrEmpty(Configuration["ApiSettings:BaseUrl"])  ? Navigation.BaseUri.TrimEnd('/') : Configuration["ApiSettings:BaseUrl"]!.TrimEnd('/');
     private string readErrorJson = string.Empty;
     private bool checkApiKey = false;
     private List<ApiEndpoint> Endpoints { get; set; } = new();
     private bool isLoading = false;
-  
+
 
     private bool IsValidApiKeyConfigured()
     {
-        var apiKey = Configuration["ApiSettings:ValidApiKey"];
+        var apiKey = ApikeySettings.ApiKey;
+      
         return !string.IsNullOrEmpty(apiKey);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender )
-        {
-
+      
             ApiState.ApiKeyExists = await apicheck();
             checkApiKey = ApiState.ApiKeyExists;
+            isValid = checkApiKey;
             StateHasChanged();
 
-        }
+       
     }
 
     protected override async Task OnInitializedAsync()
     {
-
-        checkApiKey = ApiState.ApiKeyExists;
-
+        
+       
+       
         var endpointInfos = RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList;
         if (RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList.Count >= 1)
         {
@@ -182,7 +182,7 @@
         }
 
         await StartEndpoint.TryEndpoint(endpoint, baseUrl).ConfigureAwait(false);
-        endpoint.Curl = ExtractParameters.CreateCurl(endpoint, IsValidApiKeyConfigured(), Configuration["ApiSettings:ValidApiKey"]!.ToString());
+        endpoint.Curl = ExtractParameters.CreateCurl(endpoint, IsValidApiKeyConfigured(), ApikeySettings!.ApiKey!);
        
         isLoading = false;
         

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using static WiDocApi_test.Endpoints.PersonEndpoints;
 using WiDocApi_test.Services;
 using System.Collections.Specialized;
+using WiDocApi_Blazor.WiDocApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,14 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
-builder.Services.AddSiteWiDocApi();
+
+
+
+builder.Services.AddSiteWiDocApi(new WiDocApiApikeySettings()
+{
+    ApiKey = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKey").Value,
+    ApiKeyHeaderName = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKeyHeaderName").Value
+});
 
 var app = builder.Build();
 

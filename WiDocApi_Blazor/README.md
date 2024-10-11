@@ -30,21 +30,7 @@ To create a new Blazor project with the WiDocApi library, follow these steps:
 
 >  In the sample Blazor site, I have connected a database (persons). From this database, I have created an Endpoints directory with several endpoints for GET, POST, PUT, and DELETE operations. The same API key functionality can be used for these endpoints as well. See the example for more details.
 
- **group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();**
 
-
-```csharp
-public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
-      {
-            var group = endpoints.MapGroup("/api").WithTags("GetPerson");
-            if (!string.IsNullOrEmpty(configuration["ApiSettings:ValidApiKey"]))
-            {
-                group.AddEndpointFilter<WiDocApi_Blazor.WiDocApi.Helpers.ApiKeyAuthFilter>();
-            }
-            group.MapGet
-            etc...
-           
-```
 ## New in version 2.0.0
 ## Using your own endpoints in your Blazor App?:
 - For version 2.0.0 it is possible to specify the type for the endpoints, for example :int :bool :select :datatime
@@ -142,12 +128,12 @@ By using route constraints like :bool, :int, and :datetime, we ensure that the i
 }
 ```
  **add this js script in your App.razor**  
- _content/WiDocApi_Blazor/WiDocApiScript.js (this is for the download fun))
+ _content/WiDocApi_Blazor/WiDocApiScript.js)
  ```csharp
  <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
-    <script src="_content/WiDocApi_Blazor/WiDocApiScript.js"></script>
+    <script type="module" src="_content/WiDocApi_Blazor/WiDocApiScript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 
@@ -171,17 +157,47 @@ The endpoint class look like this:
 ```
 
 
-## The appsettings.json file
+## Your appsettings.json file
 The appsettings.json file is used to store the API key for the application. The API key is stored under the "ApiSettings:ValidApiKey" key. The key is used to validate API calls made to the application.
 
 **If no ApiSettings value is provided, the authorize button will not be visible.**
 ```json
-{
-  "ApiSettings": {
-    "ValidApiKey": "test"
+ "WiDocApiKeySetting": {
+    "ApiKey": "test", // default value is string.empty
+    "ApiKeyHeaderName": "X-Api-Key" // default value is "X-Api-Key"
   }
-}
 ```
+
+## In your program.cs 
+
+add the following code for Dependency Injection.:
+```csharp
+builder.Services.AddSiteWiDocApi(new WiDocApiApikeySettings()
+{
+    ApiKey = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKey").Value,
+    ApiKeyHeaderName = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKeyHeaderName").Value
+});
+```
+
+ **group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();**
+ If you want to use the API key, you can add the following code to your endpoints.
+
+```csharp
+public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
+      {
+            var group = endpoints.MapGroup("/api").WithTags("GetPerson");
+             if ( !string.IsNullOrEmpty(configuration.GetSection("WiDocApiKeySetting.ApiKey").Value))
+            {
+                group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();
+            }
+            group.MapGet
+            etc...
+           
+```
+
+
+
+
 ## WiDocApiSchemaAttribute 
 The WiDocApiSchemaAttribute is a custom attribute that can be applied to class properties. It allows you to provide a description for each property, which can be used in API documentation or other contexts where property metadata is needed.
 

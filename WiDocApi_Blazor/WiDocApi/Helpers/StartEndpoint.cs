@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Text;
 using WiDocApi_Blazor.WiDocApi.Services;
 
+
 namespace WiDocApi_Blazor.WiDocApi.Helpers
 {
     
@@ -17,13 +18,15 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
         private readonly IConfiguration _configuration;
         private readonly HttpClient _http;
         private readonly SessionStorageService _sessionService;
+        private readonly WiDocApiApikeySettings _apikeySettings;
         private readonly ConcurrentDictionary<string, CachedApiResponse> _apiResponseCache = new ConcurrentDictionary<string, CachedApiResponse>();
 
-        public StartEndpoint(IConfiguration configuration, HttpClient http, SessionStorageService sessionService)
+        public StartEndpoint(IConfiguration configuration, HttpClient http, SessionStorageService sessionService, WiDocApiApikeySettings apikeySettings)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _http = http ?? throw new ArgumentNullException(nameof(http));
-            _sessionService =  sessionService ?? throw new ArgumentNullException(nameof(sessionService)); ;
+            _sessionService =  sessionService ?? throw new ArgumentNullException(nameof(sessionService));
+            _apikeySettings = apikeySettings ?? throw new ArgumentNullException(nameof(apikeySettings));
         }
 
         public async Task TryEndpoint(ApiEndpoint endpoint, string baseUrl)
@@ -39,7 +42,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 
                 using var requestMessage = new HttpRequestMessage(HttpMethod.Parse(endpoint.HttpMethod.ToString()!), new Uri(apiRequest));
 
-                var apiKey = _configuration["ApiSettings:ValidApiKey"];
+                var apiKey = _apikeySettings.ApiKey;
 
                 if (await _sessionService.ApiKeyExists())
                 {
@@ -48,7 +51,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 
                 if (!string.IsNullOrEmpty(apiKey))
                 {
-                    requestMessage.Headers.Add("X-Api-Key", apiKey);
+                    requestMessage.Headers.Add(_apikeySettings.ApiKeyHeaderName!, apiKey);
                 }
 
                 if (IsContentRequired(endpoint.HttpMethod.ToString().ToString()!))
