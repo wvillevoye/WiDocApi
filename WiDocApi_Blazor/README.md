@@ -114,11 +114,14 @@ By using route constraints like :bool, :int, and :datetime, we ensure that the i
  ```csharp
 @page "/apidocs"
 @rendermode InteractiveServer
-<WiDocApi_Blazor.Apidocs T="@object" classModels="@modelList" />
+<WiDocApi_Blazor.Apidocs T="@object" 
+                 classModels="@modelList" 
+                 titlePage="Person API"
+                 descriptionPage="Information about the available API endpoints for Persons"/>
+
 
 @code {
     private List<object> modelList = new();
-    private string filePath = "ApiEndpoints.json";
     protected override void OnInitialized()
     {
         // Initialize your models and add them to the list
