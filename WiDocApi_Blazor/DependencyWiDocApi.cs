@@ -12,8 +12,17 @@ namespace WiDocApi_Blazor
 {
     public static class DependencyWiDocApi
     {
-        public static void AddSiteWiDocApi(this IServiceCollection services, WiDocApiApikeySettings apikeySettings)
+        public static void AddSiteWiDocApi(this IServiceCollection services, WiDocApiApikeySettings? apikeySettings = default)
         {
+
+            apikeySettings ??= new WiDocApiApikeySettings
+            {
+                ApiKey = string.Empty, 
+                ApiKeyHeaderName = "X-Api-Key" 
+            };
+
+
+
             var types = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(x => typeof(IDependency).IsAssignableFrom(x) && x is { IsInterface: false, IsAbstract: false });
 

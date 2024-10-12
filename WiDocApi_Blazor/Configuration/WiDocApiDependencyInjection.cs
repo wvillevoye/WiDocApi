@@ -24,7 +24,7 @@ namespace WiDocApi_Blazor.Configuration.WiDocApi
             services.AddScoped<HttpMethodClassMapper>();
             services.AddScoped<SessionStorageService>();
             services.AddScoped<ExtractParameters>();
-            services.AddScoped(sp => apikeySettings);
+            services.AddSingleton(sp => apikeySettings);
 
             services.AddSingleton<ApiStateService>();
 

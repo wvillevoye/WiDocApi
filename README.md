@@ -170,7 +170,9 @@ The appsettings.json file is used to store the API key for the application. The 
 
 ## In your program.cs 
 
-add the following code for Dependency Injection.:
+if you want to use the API key, you can add the following code to your program.cs file.
+
+
 ```csharp
 builder.Services.AddSiteWiDocApi(new WiDocApiApikeySettings()
 {
@@ -178,18 +180,24 @@ builder.Services.AddSiteWiDocApi(new WiDocApiApikeySettings()
     ApiKeyHeaderName = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKeyHeaderName").Value
 });
 ```
+if you want not to use the API key, you can add the following code to your program.cs file.
+```csharp
+builder.Services.AddSiteWiDocApi();
+```
 
- **group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();**
- If you want to use the API key, you can add the following code to your endpoints.
 
+
+ 
+ If you want to use the API key, you can add the following code to your endpoints page.
+ ```text
+ group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();
+ ````
 ```csharp
 public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration)
       {
             var group = endpoints.MapGroup("/api").WithTags("GetPerson");
-             if ( !string.IsNullOrEmpty(configuration.GetSection("WiDocApiKeySetting.ApiKey").Value))
-            {
                 group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();
-            }
+           
             group.MapGet
             etc...
            

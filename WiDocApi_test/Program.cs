@@ -27,6 +27,7 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 
+//builder.Services.AddSiteWiDocApi();
 
 
 builder.Services.AddSiteWiDocApi(new WiDocApiApikeySettings()
