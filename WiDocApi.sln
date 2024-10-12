@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{4C454A
 		assets\WiDocApi2.png = assets\WiDocApi2.png
 	EndProjectSection
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{7E1FCE14-4D70-4516-8D00-AE723E03F0DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{7515FEB1-CA00-4FEB-8F1F-198C8011A55F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7515FEB1-CA00-4FEB-8F1F-198C8011A55F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7515FEB1-CA00-4FEB-8F1F-198C8011A55F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E1FCE14-4D70-4516-8D00-AE723E03F0DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E1FCE14-4D70-4516-8D00-AE723E03F0DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E1FCE14-4D70-4516-8D00-AE723E03F0DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E1FCE14-4D70-4516-8D00-AE723E03F0DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
