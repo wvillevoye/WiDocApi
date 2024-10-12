@@ -23,7 +23,7 @@ namespace WiDocApi_test.Endpoints
             {
                 group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();
             }
-
+           
             //********
             group.MapGet("/Person/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:select}/{SampleList1:select}/{SampleDate:datetime}/{StatesList:select}",
                 (string SampleString, bool SampleBool, int SampleInt, SampleEnum SampleList, ProgramLangEnum SampleList1, DateTime SampleDate, string StatesList) =>

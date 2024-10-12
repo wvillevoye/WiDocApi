@@ -30,9 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	<Content Include="README.md">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
+	<Content Include="README.md" />
   </ItemGroup>
 	<ItemGroup>
 		<None Include="..\README.md">
