@@ -1,6 +1,10 @@
 ﻿@page "/apidocs"
 @rendermode InteractiveServer
-<WiDocApi_Blazor.Apidocs T="@object" classModels="@modelList" jsonFilePath="@filePath" />
+<WiDocApi_Blazor.Apidocs T="@object" 
+                 classModels="@modelList" 
+                 titlePage="Person API"
+                 descriptionPage="Information about the available API endpoints for Persons"
+                 jsonFilePath="@filePath" />
 
 @code {
     private List<object> modelList = new();

@@ -44,8 +44,8 @@
                 </div>
             }
             <div class="col-md-12">
-                <h3 class="mb-4">API Documentation</h3>
-                <p>This documentation provides information about the available API endpoints. You can try them out directly from this page.</p>
+        <h3 class="mb-4">@titlePage</h3>
+        <h5>@descriptionPage</h5>
                     @foreach (var group in groupedEndpoints)
                     {
                         <WiDocApi_Blazor.Components.ApiEndpointAccordion T="T"
@@ -72,6 +72,13 @@
     public List<T>? classModels { get; set; } = new();
     [Parameter]
     public string jsonFilePath { get; set; } = "ApiEndpoints.json";
+    [Parameter]
+    public string titlePage { get; set; } = "API Documentation";
+    [Parameter]
+    public string? descriptionPage { get; set; } = "This documentation provides information about the available API endpoints. You can try them out directly from this page";
+
+
+
     private List<GroupedApiEndpoints> groupedEndpoints = new List<GroupedApiEndpoints>();
     private bool isValid { get; set; } = true;
     private ApiKeyModal? apiKeyModal;
