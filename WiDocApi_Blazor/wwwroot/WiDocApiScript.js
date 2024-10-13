@@ -8,23 +8,15 @@ export function copyToClipboard(jsonObject) {
         return;
     }
 
-    // Convert the JSON object to a pretty-printed string without escape characters
-    const text = JSON.stringify(jsonObject); // Indent with 2 spaces
-
-  
-
+    const text = JSON.stringify(jsonObject, undefined, 2);
     try {
-        // Use the Clipboard API to copy
         navigator.clipboard.writeText(text).then(function () {
             alert('Copied to clipboard successfully!');
         }).catch(function (err) {
-            alert('Error copying text: ', err);
+            alert('Error copying text: ' + err);
         });
     } catch (err) {
         console.error('Error copying text: ', err);
-    } finally {
-        // Clean up the temporary text area
-        document.body.removeChild(textArea);
     }
 }
 

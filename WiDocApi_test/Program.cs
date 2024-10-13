@@ -50,15 +50,16 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
-using var scope = app.Services.CreateScope();
-var personService = scope.ServiceProvider.GetRequiredService<IPersonService>();
-var statelist = await personService.GetStateAsync();
-var Selectstatelist = WiDocApi_Blazor.WiDocApi.Helpers.WiDoApiUtils.ListToDictionary(statelist);
+// Create a scope for services, initialize state list, and set up endpoint mappings
+using (var scope = app.Services.CreateScope())
+{
+    var personService = scope.ServiceProvider.GetRequiredService<IPersonService>();
+    var statelist = await personService.GetStateAsync();
+    var selectStateList = WiDoApiUtils.ListToDictionary(statelist);
 
-
-
-app.PersonsEndpoints(builder.Configuration, Selectstatelist);
-
+    // Add Persons endpoints and pass state list
+    app.PersonsEndpoints(builder.Configuration, selectStateList);
+}
 
 app.Run();
 

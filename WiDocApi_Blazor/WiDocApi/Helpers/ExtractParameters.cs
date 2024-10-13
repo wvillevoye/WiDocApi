@@ -64,23 +64,38 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 
       
 
-        public  string CreateCurl(ApiEndpoint endpoint, bool IsValidApiKeyConfigured , string apiKey)
-        {
+       public string CreateCurl(ApiEndpoint endpoint, bool IsValidApiKeyConfigured, string apiKey)
+{
+    var sb = new StringBuilder();
+    
+    // Start with the HTTP method and API request
+    sb.Append($"curl -X {endpoint.HttpMethod} \\ \n");
+    sb.Append($"'{endpoint.ApiRequest}' \\ \n");
 
-            var sb = new StringBuilder();
-            sb.Append($"curl -X '{endpoint.HttpMethod.ToString()}' \n");
-            sb.Append($"'{endpoint.ApiRequest}' \n");
-            sb.Append($"-H 'Content-Type: application/json' \n");
-            if (IsValidApiKeyConfigured)
-            {
-                sb.Append($"-H 'X-Api-Key: {apiKey}' \n");
-            }
-            if (endpoint.HttpMethod.ToString() == "POST" || endpoint.HttpMethod.ToString() == "PUT" || endpoint.HttpMethod.ToString() == "PATCH")
-            {
-                sb.Append($"-d '{endpoint.Payload}'");
-            }
-            return sb.ToString();
-        }
+    // Add the Content-Type header
+    sb.Append($"-H 'Content-Type: application/json' \\ \n");
+
+    // Add the API key if it's configured
+    if (IsValidApiKeyConfigured)
+    {
+        sb.Append($"-H 'X-Api-Key: {apiKey}' \\ \n");
+    }
+
+    // Add the payload only for methods that require it
+    if ((endpoint.HttpMethod.ToString() =="POST" || endpoint.HttpMethod.ToString() == "PUT" || endpoint.HttpMethod.ToString() == "PATCH") 
+        && !string.IsNullOrEmpty(endpoint.Payload))
+    {
+        sb.Append($"-d '{endpoint.Payload}' \n");
+    }
+     // Convert to string and remove trailing backslash if it exists
+     string curlCommand = sb.ToString().TrimEnd();
+       if (curlCommand.EndsWith("\\"))
+         {
+            curlCommand = curlCommand.TrimEnd('\\');
+         }
+
+         return curlCommand;
+}
 
     }
 }
