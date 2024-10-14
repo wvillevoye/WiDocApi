@@ -33,30 +33,34 @@ namespace WiDocApi_Blazor
 
         public async ValueTask DownloadJsonFile(string jsonObject)
         {
-
             try
             {
-                
-
                     string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                     string filename = $"data_{timestamp}.json";
                     var module = await moduleTask.Value;
                     await module.InvokeVoidAsync("downloadJsonFile", filename, jsonObject);
-                
-            
+
             }
             catch (Exception ex)
             {
                 // Log or handle exceptions as needed
                 Console.Error.WriteLine($"An error occurred: {ex.Message}");
             }
-
-
-
         }
 
-    
-
+        public async ValueTask FormatJson()
+        {
+            try
+            {
+                var module = await moduleTask.Value;
+                await module.InvokeVoidAsync("formatJson");
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exceptions as needed
+                Console.Error.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
 
 
 

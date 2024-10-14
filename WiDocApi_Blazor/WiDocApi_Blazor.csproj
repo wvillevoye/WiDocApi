@@ -63,7 +63,7 @@
 	  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	</None>
 	<None Update="Components\ApiEndpointAccordion.razor.css">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
 	<None Update="Components\ModelAccordion.razor.css">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>

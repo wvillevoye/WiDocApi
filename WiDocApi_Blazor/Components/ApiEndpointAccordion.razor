@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
+@using System.Text.Json
 @typeparam T
 @inject HttpMethodClassMapper HttpMethodClassMapper
 @inject ExtractParameters ExtractParameters
@@ -102,7 +103,13 @@
 
                         @if (endpoint.HttpMethod.ToString() == "POST" || endpoint.HttpMethod.ToString() == "PUT" || endpoint.HttpMethod.ToString() == "PATCH")
                         {
-                            <textarea @bind="endpoint.Payload" placeholder="Enter JSON payload..." class="form-control auto-resize mb-2"></textarea>
+
+                            <div class="textarea-container">
+                                <button class="btn btn-link format-json-button" @onclick="FormatJson">
+                                    <i class="bi bi-filetype-json"></i>
+                                </button>
+                                <textarea id="jsonTextArea" @bind="endpoint.Payload" placeholder="Enter JSON payload..." class="form-control auto-resize mb-2"></textarea>
+                            </div>
                         }
 
                         <button type="button" class="btn btn-sm mb-2 @HttpMethodClassMapper.GetClasses(endpoint.HttpMethod.ToString()!).buttonClass" @onclick="() => StartApi(endpoint)">
@@ -130,6 +137,17 @@
                                         @onclick="() => DownloadJsonFileAsync(endpoint.ApiResponse)" title="Copy to clipboard">
                                     <i class="bi bi-box-arrow-down" style="font-size: 25px;"></i>
                                 </button>
+                                <button class="btn btn-link p-0 position-absolute" style="top: 25px; right: 30px; z-index: 1; padding-right: 10px; color: white;"
+                                        @onclick="() => CopyToClipboardAsync(endpoint.ApiResponse)" title="Copy to clipboard">
+                                    <i class="bi bi-clipboard-data" style="font-size: 25px;"></i>
+                                </button>
+                                @if (showCopiedMessage)
+                                {
+                                    <span class="copied-message" style="color: white; font-size: 18px; position: absolute; top: 25px; right: 70px;">
+                                        Copied
+                                    </span>
+                                }
+
                                 <pre id="apiResponseText" class="p-3 mb-2 bg-dark text-white rounded">@endpoint.ApiResponse</pre>
                             </div>
                         }
@@ -162,7 +180,8 @@
 
     [Parameter]
     public Func<bool> IsValidApiKeyConfigured { get; set; } = default!;
- 
+
+   
     private void SetDynamicInputValue(ChangeEventArgs e, string parameterName, ApiEndpoint endpoint)
     {
         // Convert the checkbox value to a boolean and update the dictionary
@@ -189,7 +208,6 @@
         }
     }
 
-
    // Dispose the JS module when the component is disposed.
     public async ValueTask DisposeAsync()
     {
@@ -203,6 +221,43 @@
        // Use a regular expression to remove everything between { and } including :
        return System.Text.RegularExpressions.Regex.Replace(route, @"\{([^:]+):[^}]+\}", "$1").Replace("{", "").Replace("}", "");
     }
+    private bool showCopiedMessage = false;
+    private async Task CopyToClipboardAsync(string jsonF)
+    {
+        if (JsInterop != null)
+        {
+            // Pass formatted JSON to clipboard
+         
+            await JsInterop.CopyToClipboard(jsonF);
+            ShowCopiedMessage();
 
+        }
+    }
+    private async Task FormatJson()
+    {
+        if (JsInterop != null)
+        {
+            // Pass formatted JSON to clipboard
+           
+            await JsInterop.FormatJson();
+          
+
+        }
+    }
+    private void ShowCopiedMessage()
+    {
+        showCopiedMessage = true;
+
+        // Use a timer to hide the message after a few seconds
+        Task.Delay(2000).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                showCopiedMessage = false;
+                StateHasChanged(); // Refresh the UI
+            });
+        });
+    }
+   
 }
 

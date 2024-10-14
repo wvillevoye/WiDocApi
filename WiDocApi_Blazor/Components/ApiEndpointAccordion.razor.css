@@ -154,3 +154,21 @@ pre {
 .panel-heading {
     padding: 20px;
 }
+.textarea-container {
+    position: relative; /* Establish a positioning context for the button */
+    width: 100%; /* Adjust to your desired width */
+}
+
+.format-json-button {
+    position: absolute; /* Position the button relative to the container */
+    top: 5px; /* Adjust this value to move the button vertically */
+    right: 5px; /* Adjust this value to move the button horizontally */
+    z-index: 10; /* Ensure the button is above other elements */
+    background: transparent; /* Optional: make the button background transparent */
+    border: none; /* Optional: remove border */
+    color: inherit; /* Optional: inherit text color */
+}
+
+#jsonTextArea {
+    padding-top: 10px; /* Adjust the top padding to prevent text overlap with the button */
+}
