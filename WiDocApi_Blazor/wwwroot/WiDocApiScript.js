@@ -41,14 +41,19 @@ export function downloadJsonFile(filename, jsonData) {
 }
 
 
-export function formatJson() {
-    const input = document.getElementById('jsonTextArea');
+export function formatJson(textAreaId) {
+    const input = document.getElementById(textAreaId);
+
+    if (!input) {
+        console.error('No valid JSON text area found.');
+        return;
+    }
 
     try {
         const jsonObj = JSON.parse(input.value);
         const formattedJson = JSON.stringify(jsonObj, null, 2);
-        input.value = formattedJson; // Overwrite the input with formatted JSON
+        input.value = formattedJson;
     } catch (error) {
-        input.value = 'Invalid JSON: ' + error.message; // Display error in the same textarea
+        input.value = 'Invalid JSON: ' + error.message;
     }
 }

@@ -103,12 +103,30 @@
 
                         @if (endpoint.HttpMethod.ToString() == "POST" || endpoint.HttpMethod.ToString() == "PUT" || endpoint.HttpMethod.ToString() == "PATCH")
                         {
-
                             <div class="textarea-container">
-                                <button class="btn btn-link format-json-button" @onclick="FormatJson">
-                                    <i class="bi bi-filetype-json"></i>
-                                </button>
-                                <textarea id="jsonTextArea" @bind="endpoint.Payload" placeholder="Enter JSON payload..." class="form-control auto-resize mb-2"></textarea>
+
+                                @if (endpoint.HttpMethod.ToString() == "POST")
+                                {
+                                    
+                                    <button class="btn btn-link format-json-button" @onclick="@(() => FormatJson("jsonTextAreaPost"))">
+                                        <i class="bi bi-filetype-json"></i>
+                                    </button>
+                                    <textarea id="jsonTextAreaPost" @bind="endpoint.Payload" placeholder="Enter JSON payload..." class="jsonTextArea form-control auto-resize mb-2"></textarea>
+                                }
+                                else if (endpoint.HttpMethod.ToString() == "PUT")
+                                {
+                                    <button class="btn btn-link format-json-button" @onclick="@(() => FormatJson("jsonTextAreaPut"))">
+                                        <i class="bi bi-filetype-json"></i>
+                                    </button>
+                                    <textarea id="jsonTextAreaPut" @bind="endpoint.Payload" placeholder="Enter JSON payload..." class="jsonTextArea form-control auto-resize mb-2"></textarea>
+                                }
+                                else if (endpoint.HttpMethod.ToString() == "PATCH")
+                                {
+                                    <button class="btn btn-link format-json-button" @onclick="@(() => FormatJson("jsonTextAreaPatch"))">
+                                        <i class="bi bi-filetype-json"></i>
+                                    </button>
+                                    <textarea id="jsonTextAreaPatch" @bind="endpoint.Payload" placeholder="Enter JSON payload..." class="jsonTextArea form-control auto-resize mb-2"></textarea>
+                                }
                             </div>
                         }
 
@@ -233,13 +251,13 @@
 
         }
     }
-    private async Task FormatJson()
+    private async Task FormatJson(string methodId)
     {
         if (JsInterop != null)
         {
             // Pass formatted JSON to clipboard
            
-            await JsInterop.FormatJson();
+            await JsInterop.FormatJson(methodId);
           
 
         }

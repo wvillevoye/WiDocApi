@@ -48,12 +48,12 @@ namespace WiDocApi_Blazor
             }
         }
 
-        public async ValueTask FormatJson()
+        public async ValueTask FormatJson(string methodId)
         {
             try
             {
                 var module = await moduleTask.Value;
-                await module.InvokeVoidAsync("formatJson");
+                await module.InvokeVoidAsync("formatJson", methodId);
             }
             catch (Exception ex)
             {
