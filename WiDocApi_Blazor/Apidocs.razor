@@ -131,7 +131,7 @@
                                                    Endpoints = g.ToList()
                                                }).ToList();
 
-        foreach (var endpoint in Endpoints)
+         foreach (var endpoint in Endpoints)
         {
            
                 ExtractParameters.InitializeDynamicInputValues(endpoint);
@@ -166,8 +166,14 @@
         if (endpoint.RequiresInput)
         {
             // Check if all required input values are provided
-            foreach (var param in ExtractParameters.FromPath(endpoint.Path!))
+            foreach (var param in ExtractParameters.FromPath(endpoint.Path!, endpoint.Parameters))
             {
+                // Skip validation if the parameter is in endpoint.Parameters
+                if (endpoint.Parameters.ContainsKey(param.ParameterName))
+                {
+                    continue;
+                }
+
                 // Cast the value to string (if it exists) for the null or empty check
                 if (endpoint.DynamicInputValues.TryGetValue(param.ParameterName, out var value) && value is string stringValue)
                 {

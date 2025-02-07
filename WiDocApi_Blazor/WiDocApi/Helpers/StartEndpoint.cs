@@ -107,8 +107,26 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                 }
             });
 
-            // Concatenate base URL with the path
-            return $"{baseUrl}{fullPath}";
+            // Initialize the query parameters list
+            var queryParameters = new List<string>();
+
+            // Add parameters from endpoint.Parameters to the query string
+            foreach (var kvp in endpoint.Parameters)
+            {
+                if (endpoint.DynamicInputValues.TryGetValue(kvp.Key, out var paramValue))
+                {
+                    queryParameters.Add($"{kvp.Key}={Uri.EscapeDataString(paramValue.ToString()!)}");
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"The given key '{kvp.Key}' was not present in the dictionary.");
+                }
+            }
+
+            // Construct the full URL
+            var fullUrl = queryParameters.Count > 0 ? $"{baseUrl}{fullPath}?{string.Join("&", queryParameters)}" : $"{baseUrl}{fullPath}";
+
+            return fullUrl;
         }
 
 

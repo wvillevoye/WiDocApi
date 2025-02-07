@@ -13,7 +13,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
     public class ExtractParameters
     {
 
-        public List<(string ParameterName, string? Type)> FromPath(string path)
+        public List<(string ParameterName, string? Type)> FromPath(string path, Dictionary<string, string> extraparameters)
         {
             var parameters = new List<(string, string?)>();
             var matches = System.Text.RegularExpressions.Regex.Matches(path, @"\{(\w+)(?::(\w+))?\}");
@@ -21,7 +21,7 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
             foreach (Match match in matches)
             {
                 string paramName = match.Groups[1].Value; // Capture the parameter name
-                string paramType = match.Groups[2].Success ? match.Groups[2].Value :"string"; // Capture the type if available
+                string paramType = match.Groups[2].Success ? match.Groups[2].Value : "string"; // Capture the type if available
 
                 // If colon is found and paramType is not null, ensure paramName does not include the type
                 if (!string.IsNullOrEmpty(paramType))
@@ -31,12 +31,56 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 
                 parameters.Add((paramName, paramType));
             }
+
+            // Add extraparameters to parameters
+            foreach (var kvp in extraparameters)
+            {
+                parameters.Add((kvp.Key, kvp.Value));
+            }
+
             return parameters;
         }
 
+        //public void InitializeDynamicInputValues(ApiEndpoint endpoint)
+        //{
+        //    var parameters = FromPath(endpoint.Path!);
+        //    Dictionary<string, string> extarctedParameters = new Dictionary<string, string>();
+
+        //    if (endpoint.Parameters.Count > 0)
+        //    {
+        //        extarctedParameters = endpoint.Parameters;
+        //    }
+
+
+
+        //    foreach (var (paramName, paramType) in parameters)
+        //    {
+        //        // Check if the dictionary already contains this parameter
+        //        if (!endpoint.DynamicInputValues.ContainsKey(paramName))
+        //        {
+        //            // Initialize with default value based on type without converting to string
+        //            endpoint.DynamicInputValues[paramName] = GetDefaultValueForType(paramType).ToString()!;
+        //        }
+        //    }
+        //}
+
         public void InitializeDynamicInputValues(ApiEndpoint endpoint)
         {
-            var parameters = FromPath(endpoint.Path!);
+            Dictionary<string, string?> parameters = FromPath(endpoint.Path!,endpoint.Parameters)
+                .ToDictionary(p => p.ParameterName, p => p.Type);
+            Dictionary<string, string> extarctedParameters = new Dictionary<string, string>();
+
+            if (endpoint.Parameters.Count > 0)
+            {
+                extarctedParameters = endpoint.Parameters;
+            }
+
+            // Add extarctedParameters to parameters
+            foreach (var kvp in extarctedParameters)
+            {
+                parameters[kvp.Key] = kvp.Value;
+            }
+
             foreach (var (paramName, paramType) in parameters)
             {
                 // Check if the dictionary already contains this parameter
@@ -47,6 +91,8 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
                 }
             }
         }
+
+
 
         private object GetDefaultValueForType(string? paramType)
         {

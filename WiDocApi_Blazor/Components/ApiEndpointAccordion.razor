@@ -52,9 +52,16 @@
                         @if (endpoint.RequiresInput)
                         {
                             <dl class="row mb-2">
-                                @foreach (var param in ExtractParameters.FromPath(endpoint.Path!))
+                                @foreach (var param in  ExtractParameters.FromPath(endpoint.Path!, endpoint.Parameters))
                                 {
-                                    <dt class="col-sm-2">@param.ParameterName</dt>
+                                     <dt class="col-sm-2">
+                                          
+                                            @param.ParameterName
+                                        @if (endpoint.Path!.Contains($"{{{param.ParameterName}}}") ||endpoint.Parameters.Count == 0)
+                                                {
+                                                    <i class="bi bi-asterisk" style="color: red; font-size:10px; vertical-align: top;"></i>
+                                                }
+                                        </dt>
 
                                     <dd class="col-sm-10">
                                         @switch (param.Type)

@@ -15,6 +15,7 @@ namespace WiDocApi_Blazor.WiDocApi.Models
         public int CacheDurationMinutes { get; set; } = 0;
         public Dictionary<string, Dictionary<string, string>> SelectLists { get; set; } = [];
         public bool Active { get; set; } = true;
+        public Dictionary<string, string> Parameters { get; set; } = [];
 
     }
 

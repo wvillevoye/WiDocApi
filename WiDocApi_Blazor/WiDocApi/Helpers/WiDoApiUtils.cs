@@ -15,7 +15,6 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
 
 
 
-     
 
         private static Dictionary<string, Dictionary<string, T>> BuildSelectDictionary<T>(string name, Dictionary<string, T> listDb)
         {
@@ -123,5 +122,8 @@ namespace WiDocApi_Blazor.WiDocApi.Helpers
             return false;
         }
     }
+
+
+   
 
 }

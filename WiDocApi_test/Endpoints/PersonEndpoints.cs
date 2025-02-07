@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System;
+using System.Reflection.Metadata;
 using System.Text.Json;
 using WiDocApi_Blazor.WiDocApi.Helpers;
 using WiDocApi_Blazor.WiDocApi.Models;
@@ -13,6 +14,18 @@ namespace WiDocApi_test.Endpoints
 {
     public static class PersonEndpoints
     {
+
+        public static async Task<IResult> SearchPersons(string SearchStartWithLastName, string? State, IPersonService personService)
+        {
+            var _persons = await personService.GetPersonsByLastNameAsync(SearchStartWithLastName, State);
+
+            if (_persons == null)
+            {
+                return Results.NotFound("Persons not found.");
+            }
+            return Results.Ok(_persons);
+        }
+
         public static void PersonsEndpoints(this IEndpointRouteBuilder endpoints, IConfiguration configuration, Dictionary<string,string> states)
         {
             var baseurlApi = "api/";
@@ -23,7 +36,27 @@ namespace WiDocApi_test.Endpoints
             {
                 group.AddEndpointFilter<WiDocApiApiKeyAuthFilter>();
             }
+
+
            
+             group.MapGet("/Person/search/{SearchStartWithLastName}", SearchPersons)
+                .WithName("SearchStartWithLastName")
+                .WithOpenApi()
+                .AddWiDocApiEndpoints(new EndpointInfo
+                {
+                    Group = "GetPerson",
+                    Description = "Search person by last name starting with",
+                    Parameters = new Dictionary<string, string>
+                                        {
+                                            { "State", "string" }
+                                        }
+                    //SelectLists = WiDoApiUtils.CreateSelectInput("State", WiDoApiUtils.SelectValueType.Text, states)
+                });
+
+
+
+
+
             //********
             group.MapGet("/Person/Test/{SampleString}/{SampleBool:bool}/{SampleInt:int}/{SampleList:select}/{SampleList1:select}/{SampleDate:datetime}/{StatesList:select}",
                 (string SampleString, bool SampleBool, int SampleInt, SampleEnum SampleList, ProgramLangEnum SampleList1, DateTime SampleDate, string StatesList) =>
@@ -74,29 +107,7 @@ namespace WiDocApi_test.Endpoints
             });
 
 
-            group.MapGet("/Person/search/{SearchStartWithLastName}/{State:select}",
-                async (string SearchStartWithLastName, string State, IPersonService personService) =>
-            {
-                // Use the injected personService here
-
-                var _persons = await personService.GetPersonsByLastNameAsync(SearchStartWithLastName, State);
-
-
-                if (_persons == null)
-                {
-                    return Results.NotFound("Persons not found.");
-                }
-                return Results.Ok(_persons);
-            })
-            .WithName("SearchStartWithLastName")
-            .WithOpenApi()
-            .AddWiDocApiEndpoints(new EndpointInfo
-            {
-                Group = "GetPerson",
-                Description = "Search person by last name starting with",
-                SelectLists = WiDoApiUtils.CreateSelectInput("State", WiDoApiUtils.SelectValueType.Text, states)
-
-            });
+           
 
 
 

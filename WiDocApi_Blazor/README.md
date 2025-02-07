@@ -4,6 +4,37 @@
 > #### This updated version includes the mention of the **WiDocApi_test** project, which provides an example of how to integrate the WiDocApi library into a Blazor app.
 **WiDocApi** is a Blazor .NET 8 program built as a Razor Class Library that provides a Swagger-like interface for API documentation and interaction. The project supports API key integration and manages API calls through the `Endpoints` directory of the main Blazor application.
 
+**New in version 2.3.0**: The updated version includes the ability to specify types for endpoints with parameters this generate this url:
+- api/Person/search/sm?State=new%20york
+
+````csharp
+
+.WithName("Test123")
+                .WithOpenApi()
+                .AddWiDocApiEndpoints(new EndpointInfo
+                {
+                    Group = "Test",
+                    Description = "Test with string, int, bool, 2 enum, and datetime",
+                    CacheDurationMinutes = 0,
+                    Parameters = new Dictionary<string, string>
+                                        {
+                                            { "State", "string" },
+                                            { "Country", "string" }
+                                        }
+
+                    SelectLists = WiDoApiUtils.CreateSelectInput("SampleList",WiDoApiUtils.SelectValueType.Text, WiDoApiUtils.EnumToDictionary<SampleEnum>()["SampleEnum"])
+                                         .AddWithChain("SampleList1", WiDoApiUtils.SelectValueType.Text, WiDoApiUtils.EnumToDictionary<ProgramLangEnum>()["ProgramLangEnum"])
+                                         .AddWithChain("StatesList", WiDoApiUtils.SelectValueType.Text, states)
+                });
+
+
+
+
+
+
+
+````
+
 ## Features
 
 - **Swagger-like Interface**: WiDocApi offers an easy-to-use interface for exploring and testing API endpoints.
