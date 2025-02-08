@@ -46,11 +46,11 @@ namespace WiDocApi_test.Endpoints
                 {
                     Group = "GetPerson",
                     Description = "Search person by last name starting with",
+                    SelectLists = WiDoApiUtils.CreateSelectInput("State", WiDoApiUtils.SelectValueType.Text, states),
                     Parameters = new Dictionary<string, string>
                                         {
-                                            { "State", "string" }
-                                        }
-                    //SelectLists = WiDoApiUtils.CreateSelectInput("State", WiDoApiUtils.SelectValueType.Text, states)
+                                            { "State", "select" }
+                                        },
                 });
 
 
