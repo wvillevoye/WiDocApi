@@ -11,17 +11,16 @@
     {
         <div class="accordion-item accordion-item-spacing" style="background-color:#ECF3Fa">
             <h2 class="accordion-header accordion-moduleinfo" id="heading-@index">
-                <button class="accordion-button collapsed" style="background-color:#e76739;color:white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@index" aria-expanded="false" aria-controls="collapse-@index">
+                <button class="accordion-button collapsed" style="background-color:#e76739;color:white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@index" aria-expanded="false" aria-controls="collapse-@index" @onclick="() => OnAccordionClick(model)">
                     <span style="font-weight:600"><i class="bi bi-database-fill px-1"></i> @model!.GetType().Name</span>
                 </button>
             </h2>
-           
 
             <div id="collapse-@index" class="accordion-collapse collapse" aria-labelledby="heading-@index" data-bs-parent="#accordionModels">
                 <div class="accordion-body">
                     <div class="accordion" id="TestAcc">
-                      <div class=" pt-1"> 
-                            <button class="btn btn-primary btn-sm my-3" @onclick="ToggleJsonVisibility">
+                        <div class=" pt-1">
+                            <button class="btn btn-primary btn-sm my-3" @onclick="() => ToggleJsonVisibility(model)">
                                 @if (showJson)
                                 {
                                     <i class="bi bi-eye-slash"></i>
@@ -35,7 +34,7 @@
 
                             @if (showJson && !string.IsNullOrEmpty(sampleJson))
                             {
-                              <div class="mt-2">
+                                <div class="mt-2">
                                     <pre>@sampleJson</pre>
                                     <button class="btn btn-primary btn-sm mb-3"
                                             @onclick="() => CopyToClipboardAsync(sampleJson)" title="Copy to clipboard">
@@ -47,11 +46,9 @@
                                             Copied
                                         </span>
                                     }
-
-                              </div>
+                                </div>
                             }
                         </div>
-
 
                         @foreach (var description in GetPropertyDescriptions(model))
                         {
@@ -64,7 +61,7 @@
                                         <i class="bi bi-filetype-key  px-1"></i><b>@description.Name</b>
                                     </button>
                                 </h2>
-                                
+
                                 <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <ul class="list-group list-group-flush">
@@ -95,9 +92,6 @@
                             </div>
                         }
                     </div>
-                    @* <button class="btn btn-primary btn-sm mt-3" @onclick="@(() => GenerateSampleJson(model))"><i class="bi bi-filetype-json"></i></button> *@
-
-                    
                 </div>
             </div>
         </div>
@@ -155,21 +149,25 @@
         Model = model;
         return descriptions;
     }
-
-    
-    private void ToggleJsonVisibility()
+    private void ToggleJsonVisibility(object model)
     {
-        if (!showJson)
-        {
-            // Generate JSON if it's not generated yet
-            if (string.IsNullOrEmpty(sampleJson))
-            {
-                GenerateSampleJson(Model!);
-            }
-        }
+        // Generate JSON for the current model
+        GenerateSampleJson(model);
 
         // Toggle the visibility state
         showJson = !showJson;
+
+        // Update the UI
+        StateHasChanged();
+    }
+
+    private void OnAccordionClick(object model)
+    {
+        // Generate JSON for the current model
+        GenerateSampleJson(model);
+
+        // Update the UI
+        StateHasChanged();
     }
 
     

@@ -38,3 +38,65 @@ public partial class Person
     [WiDocApiSchema("Zip code of the person's address")]
     public string ZipCode { get; set; }
 }
+public record LogMessages
+{
+    /// <summary>
+    /// Gets or sets the line number of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the line number of the log message")]
+    public int LineNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the source name of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the source name of the log message")]
+    public string? SourceName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the level of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the level of the log message")]
+    public string? Level { get; set; }
+
+    /// <summary>
+    /// Gets or sets the code of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the code of the log message")]
+    public string? Code { get; set; }
+
+    /// <summary>
+    /// Gets or sets the create date of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the create date of the log message")]
+    public DateTime CreateDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the messages of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the messages of the log message")]
+    public string? Messages { get; set; }
+
+    /// <summary>
+    /// Gets or sets the exception of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the exception of the log message")]
+    public string? Exception { get; set; }
+
+    /// <summary>
+    /// Gets or sets the properties of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the properties of the log message")]
+    public string? Properties { get; set; }
+
+    /// <summary>
+    /// Gets or sets the note of the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets the note of the log message")]
+    public string? Note { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to send mail for the log message.
+    /// </summary>
+    [WiDocApiSchema("Gets or sets a value indicating whether to send mail for the log message")]
+    public string? sendmail { get; set; } = "false";
+}
