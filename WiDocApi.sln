@@ -10,12 +10,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E94E6BDE-7AF3-4588-B4F8-87DED3A76BAA}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitlab-ci.yml = .gitlab-ci.yml
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{4C454A85-A970-4380-B156-BB24A73A67CA}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\WiDocApi\Afbeelding1.png = ..\..\..\WiDocApi\Afbeelding1.png
+		..\..\WiDocApi\Afbeelding1.png = ..\..\WiDocApi\Afbeelding1.png
 		assets\Afbeelding1.png = assets\Afbeelding1.png
 		assets\WiDocApi2.png = assets\WiDocApi2.png
 	EndProjectSection

@@ -9,15 +9,12 @@
 	<Authors>Willy Villevoye</Authors>
 	<!--<Company>Maastricht University Library</Company>-->
 	<Description>WidDocApi_blazor is a look a like of swagger in one blazazzor app</Description>
-	<Version>2.3.1</Version>
-	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<PackageId>WiDocApi_blazor</PackageId>
 	<Product>WiDocApi</Product>
 	<Copyright>MIT</Copyright>
 	<PackageIcon>Firefly vector logo, coding, book, database 57227.png</PackageIcon>
 	<PackageProjectUrl>https://github.com/wvillevoye/WiDocApi</PackageProjectUrl>
 	<PackageTags>swagger blazor api doc</PackageTags>
-	<PackageOutputPath>C:\WerkCode\Packages\Nugets</PackageOutputPath>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
  </PropertyGroup>
 
