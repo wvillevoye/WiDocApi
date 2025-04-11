@@ -17,7 +17,7 @@ namespace WiDocApi_Blazor
 
             apikeySettings ??= new WiDocApiApikeySettings
             {
-                ApiKey = string.Empty, 
+                ApiKeys = new List<string?>(), 
                 ApiKeyHeaderName = "X-Api-Key" 
             };
 

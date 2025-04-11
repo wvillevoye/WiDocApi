@@ -7,64 +7,65 @@
 @inject IJSRuntime jsRuntime
 @inject SessionStorageService sessionService
 @inject ApiStateService ApiState
+
 @inject ExtractParameters ExtractParameters
 @inject WiDocApiApikeySettings ApikeySettings
 
 
         <ApiKeyModal @ref="apiKeyModal" />
-       
-      
-        
+
+
+
         @if (!string.IsNullOrEmpty(readErrorJson))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                <strong>Error:</strong> @readErrorJson
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+<div class="row mb-3">
+    @if (IsValidApiKeyConfigured())
+    {
+        <div class="col-md-12 text-end">
+            @if (isValid)
+            {
+                <button class="btn btn-secondary" @onclick="() => apiKeyModal!.Show()">Authorize  <i class="bi bi-lock"></i></button>
+            }
+            else
+            {
+                <button class="btn btn-secondary" @onclick="() => apiKeyModal!.Show()">Authorize <i class="bi bi-unlock"></i></button>
+            }
+        </div>
+    }
+    <div class="col-md-12">
+        <h3 class="mb-4">@titlePage</h3>
+        <h5>@descriptionPage</h5>
+        @foreach (var group in groupedEndpoints)
         {
-             <div class="row">
-                <div class="col-md-12">
-                    <div class="alert alert-danger" role="alert">
-                        <strong>Error:</strong> @readErrorJson
-                    </div>
-                </div>
-             </div>
+            <WiDocApi_Blazor.Components.ApiEndpointAccordion T="T"
+            Endpoints="group.Endpoints"
+            groupName="@group.GroupName"
+            checkApiKey="checkApiKey"
+            isLoading="isLoading"
+            StartApi="StartApi"
+            IsValidApiKeyConfigured="IsValidApiKeyConfigured" />
         }
 
 
-
-
-        <div class="row mb-3">
-            @if (IsValidApiKeyConfigured())
-            {
-                <div class="col-md-12 text-end">
-                    @if (isValid)
-                    {
-                        <button class="btn btn-secondary" @onclick="() => apiKeyModal.Show()">Authorize  <i class="bi bi-lock"></i></button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-secondary" @onclick="() => apiKeyModal.Show()">Authorize <i class="bi bi-unlock"></i></button>
-                    }
-                </div>
-            }
-            <div class="col-md-12">
-        <h3 class="mb-4">@titlePage</h3>
-        <h5>@descriptionPage</h5>
-                    @foreach (var group in groupedEndpoints)
-                    {
-                        <WiDocApi_Blazor.Components.ApiEndpointAccordion T="T"
-                                              Endpoints="group.Endpoints"
-                                              groupName="@group.GroupName"
-                                              checkApiKey="checkApiKey"
-                                              isLoading="isLoading"
-                                              StartApi="StartApi"
-                                              IsValidApiKeyConfigured="IsValidApiKeyConfigured" />
-                    }
-
-                
-            </div>
-        </div>
-            <div class="row mb-3">
-                <div class="col-md-12">
-                      <WiDocApi_Blazor.Components.ModelAccordion T="T" classModels="classModels" />
-              </div>
-        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <WiDocApi_Blazor.Components.ModelAccordion T="T" classModels="classModels" />
+    </div>
+</div>
 
 @code {
 
@@ -91,27 +92,28 @@
 
     private bool IsValidApiKeyConfigured()
     {
-        var apiKey = ApikeySettings.ApiKey;
-      
-        return !string.IsNullOrEmpty(apiKey);
+
+        var apiKeys = ApikeySettings.ApiKeys;
+        return apiKeys != null && apiKeys.Any(key => !string.IsNullOrEmpty(key));
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-      
-            ApiState.ApiKeyExists = await apicheck();
-            checkApiKey = ApiState.ApiKeyExists;
-            isValid = checkApiKey;
-            StateHasChanged();
 
-       
+        ApiState.ApiKeyExists = await apicheck();
+        checkApiKey = ApiState.ApiKeyExists;
+        isValid = checkApiKey;
+        StateHasChanged();
+
+
     }
 
     protected override async Task OnInitializedAsync()
     {
-        
-       
-       
+
+
+
         var endpointInfos = RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList;
         if (RouteHandlerBuilderExtensions.WiDocApiStorage.WiDocApiList.Count >= 1)
         {
@@ -131,23 +133,24 @@
                                                    Endpoints = g.ToList()
                                                }).ToList();
 
-         foreach (var endpoint in Endpoints)
+        foreach (var endpoint in Endpoints)
         {
-           
-                ExtractParameters.InitializeDynamicInputValues(endpoint);
-            
+
+            ExtractParameters.InitializeDynamicInputValues(endpoint);
+
         }
 
     }
 
     private  async Task<bool>  apicheck() {
-    
+
         return  await sessionService.ApiKeyExists();
     }
 
     private async Task StartApi(ApiEndpoint endpoint)
     {
         isLoading= true;
+        string? selectedApiKey = null;
         if (IsValidApiKeyConfigured())
         {
             var exist = await sessionService.ApiKeyExists();
@@ -158,8 +161,11 @@
                 isLoading = false;
                 return;
             }
-        
-        
+
+
+            // var apiKeys = await sessionService.GetFromSessionStorage("apiKey");
+            selectedApiKey = await sessionService.GetFromSessionStorage("apiKey");
+
         
         }
       
@@ -195,7 +201,8 @@
         }
 
         await StartEndpoint.TryEndpoint(endpoint, baseUrl).ConfigureAwait(false);
-        endpoint.Curl = ExtractParameters.CreateCurl(endpoint, IsValidApiKeyConfigured(), ApikeySettings!.ApiKey!);
+        endpoint.Curl = ExtractParameters.CreateCurl(endpoint, IsValidApiKeyConfigured(), selectedApiKey!);
+
        
         isLoading = false;
         

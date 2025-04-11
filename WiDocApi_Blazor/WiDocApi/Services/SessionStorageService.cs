@@ -1,4 +1,5 @@
 ﻿using Microsoft.JSInterop;
+using System.Text.Json;
 
 namespace WiDocApi_Blazor.WiDocApi.Services
 {
@@ -28,8 +29,8 @@ namespace WiDocApi_Blazor.WiDocApi.Services
             var apiKey = await GetFromSessionStorage("apiKey");
             return !string.IsNullOrEmpty(apiKey);
         }
-    }
 
+    }
     public class ApiStateService
     {
         public bool ApiKeyExists { get; set; }

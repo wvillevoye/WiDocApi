@@ -4,8 +4,12 @@
 > #### This updated version includes the mention of the **WiDocApi_test** project, which provides an example of how to integrate the WiDocApi library into a Blazor app.
 **WiDocApi** is a Blazor .NET 8 program built as a Razor Class Library that provides a Swagger-like interface for API documentation and interaction. The project supports API key integration and manages API calls through the `Endpoints` directory of the main Blazor application.
 
-**New in version 2.3.0**: The updated version includes the ability to specify types for endpoints with parameters this generate this url:
+**New in version 2.3.1**: The updated version includes the ability to specify types for endpoints with parameters this generate this url:
 - api/Person/search/sm?State=new%20york
+
+**New in version 2.3.2**: The updated version now supports multiple API keys in your appsettings.json! Always use square brackets [".."] to define the list of API keys, allowing you to manage and utilize more API keys seamlessly.
+- "ApiKey": ["test","test1"], // default value is a List
+
 
 ````csharp
 
@@ -196,7 +200,7 @@ The appsettings.json file is used to store the API key for the application. The 
 **If no ApiSettings value is provided, the authorize button will not be visible.**
 ```json
  "WiDocApiKeySetting": {
-    "ApiKey": "test", // default value is string.empty
+    "ApiKey": ["test","test1"], // default value is a List
     "ApiKeyHeaderName": "X-Api-Key" // default value is "X-Api-Key"
   }
 ```
@@ -209,7 +213,7 @@ if you want to use the API key, you can add the following code to your program.c
 ```csharp
 builder.Services.AddSiteWiDocApi(new WiDocApiApikeySettings()
 {
-    ApiKey = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKey").Value,
+    ApiKey = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKey").Get<List<string>>()!,
     ApiKeyHeaderName = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKeyHeaderName").Value
 });
 ```

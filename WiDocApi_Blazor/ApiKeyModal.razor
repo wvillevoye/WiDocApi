@@ -58,15 +58,15 @@
 
     private async void ValidateApiKey()
     {
-        var validApiKey = ApikeySettings.ApiKey;
-        if (inputApiKey == validApiKey)
+        var validApiKey = ApikeySettings.ApiKeys;
+        if (validApiKey.Contains(inputApiKey))
         {
 
             //await jsRuntime.InvokeVoidAsync("setCookie", "apiKey", validApiKey, 1);
             // If the API key matches, hide the modal and allow access to the API.
             errorMessage = null;
             Hide();
-           await SessionService.SetInSessionStorage("apiKey", validApiKey);
+            await SessionService.SetInSessionStorage("apiKey", inputApiKey);
             
             //Navigation.NavigateTo("/apidocs/true");
             //Navigation.NavigateTo($"{Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath}?isValid=true");

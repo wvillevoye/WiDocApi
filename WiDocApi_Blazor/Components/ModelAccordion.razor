@@ -11,7 +11,7 @@
     {
         <div class="accordion-item accordion-item-spacing" style="background-color:#ECF3Fa">
             <h2 class="accordion-header accordion-moduleinfo" id="heading-@index">
-                <button class="accordion-button collapsed" style="background-color:#e76739;color:white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@index" aria-expanded="false" aria-controls="collapse-@index" @onclick="() => OnAccordionClick(model)">
+                <button class="accordion-button collapsed" style="background-color:#e76739;color:white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@index" aria-expanded="false" aria-controls="collapse-@index" @onclick="() => OnAccordionClick(model!)">
                     <span style="font-weight:600"><i class="bi bi-database-fill px-1"></i> @model!.GetType().Name</span>
                 </button>
             </h2>

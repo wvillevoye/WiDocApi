@@ -29,10 +29,9 @@ builder.Services.AddQuickGridEntityFrameworkAdapter();
 
 //builder.Services.AddSiteWiDocApi();
 
-
 builder.Services.AddSiteWiDocApi(new WiDocApiApikeySettings()
 {
-    ApiKey = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKey").Value,
+    ApiKeys = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKey").Get<List<string>>()!,
     ApiKeyHeaderName = builder.Configuration.GetSection("WiDocApiKeySetting:ApiKeyHeaderName").Value
 });
 

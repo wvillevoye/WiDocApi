@@ -10,7 +10,7 @@ namespace WiDocApi_Blazor.WiDocApi.Models
     {
 
        public string? ApiKeyHeaderName { get; set; } = "X-Api-Key";
-       public string? ApiKey { get; set; } = string.Empty;
+       public List<string?> ApiKeys { get; set; } = new List<string?>();
 
     }
 }
