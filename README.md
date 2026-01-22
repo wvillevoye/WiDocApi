@@ -2,7 +2,7 @@
 
 
 > #### This updated version includes the mention of the **WiDocApi_test** project, which provides an example of how to integrate the WiDocApi library into a Blazor app.
-**WiDocApi** is a Blazor .NET 8 program built as a Razor Class Library that provides a Swagger-like interface for API documentation and interaction. The project supports API key integration and manages API calls through the `Endpoints` directory of the main Blazor application.
+**WiDocApi** is a Blazor .NET 10 program built as a Razor Class Library that provides a Swagger-like interface for API documentation and interaction. The project supports API key integration and manages API calls through the `Endpoints` directory of the main Blazor application.
 
 ## Features
 
@@ -13,7 +13,7 @@
 
 To create a new Blazor project with the WiDocApi library, follow these steps:
 - Create a new Blazor Web App project.
-- Framework: .NET 8.0
+- Framework: .NET 10FreyGlenn#18012016.0
 - Authentication: None Authentication
 - Configure for HTTPS: Yes
 - interacrive render mode: Server
