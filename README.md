@@ -115,8 +115,8 @@ By using route constraints like :bool, :int, and :datetime, we ensure that the i
 @page "/apidocs"
 @rendermode InteractiveServer
 <WiDocApi_Blazor.Apidocs  classModels="@modelList" 
-                 titlePage="Person API"
-                 descriptionPage="Information about the available API endpoints for Persons"/>
+                titlePage="Person API"
+                descriptionPage="Information about the available API endpoints for Persons"/>
 
 
 @code {
