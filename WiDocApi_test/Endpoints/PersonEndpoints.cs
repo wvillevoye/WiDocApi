@@ -41,7 +41,6 @@ namespace WiDocApi_test.Endpoints
            
              group.MapGet("/Person/search/{SearchStartWithLastName}", SearchPersons)
                 .WithName("SearchStartWithLastName")
-                .WithOpenApi()
                 .AddWiDocApiEndpoints(new EndpointInfo
                 {
                     Group = "GetPerson",
@@ -75,7 +74,6 @@ namespace WiDocApi_test.Endpoints
                     return Results.Json(_res, new JsonSerializerOptions { WriteIndented = true });
                 })
                 .WithName("Test123")
-                .WithOpenApi()
                 .AddWiDocApiEndpoints(new EndpointInfo
                 {
                     Group = "Test",
@@ -98,7 +96,6 @@ namespace WiDocApi_test.Endpoints
                 return Results.Ok(_person);
             })
             .WithName("SearchById")
-            .WithOpenApi()
             .AddWiDocApiEndpoints(new EndpointInfo
             {
                 Group = "GetPerson",
@@ -121,7 +118,6 @@ namespace WiDocApi_test.Endpoints
                 return Results.Ok(_state);
          })
           .WithName("States")
-          .WithOpenApi()
           .AddWiDocApiEndpoints(new EndpointInfo
           {
               Group = "GetStates",
@@ -135,7 +131,6 @@ namespace WiDocApi_test.Endpoints
                 return Results.Created($"/Person/{createdPerson.LastName}", createdPerson);
         })
         .WithName("CreatePerson")
-        .WithOpenApi()
         .AddWiDocApiEndpoints(new EndpointInfo
          {
               Group = "RestPerson",
@@ -153,7 +148,6 @@ namespace WiDocApi_test.Endpoints
                 return Results.Ok(result);
         })
          .WithName("UpdatePerson")
-         .WithOpenApi()
          .AddWiDocApiEndpoints(new EndpointInfo
           {
              Group = "RestPerson",
@@ -170,7 +164,6 @@ namespace WiDocApi_test.Endpoints
                 return Results.NoContent();
          })
          .WithName("DeletePerson")
-         .WithOpenApi()
         .AddWiDocApiEndpoints(new EndpointInfo
          {
               Group = "RestPerson",
