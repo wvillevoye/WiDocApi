@@ -1,16 +1,3 @@
-# This pipeline only runs after a tag has been created
-# It will create a nuget package with the tag that was created 
-trigger-on-tag-creation-pipeline:
-  trigger:
-    include:
-      - project: 'library-systems-and-development/ci-templates'
-        file: '/dotnet8-pipelines/nuget-tag-pipeline.yml'
-    strategy: depend
-  variables:
-    UMSHARED: 'true'
-  rules:
-    - if: '$CI_COMMIT_TAG'
-
 # This pipeline only runs if the trigger is the creation of a merge request
 # To prevent the merge request from merging a broken build, a setting needs to be set on project level
 # Settings -> Merge requests
@@ -23,3 +10,13 @@ trigger-on-merge-request:
     strategy: depend
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  
+# This pipeline only runs after a commit has been pushed 
+trigger-on-commit-pipeline:
+  trigger:
+    include:
+      - project: 'library-systems-and-development/ci-templates'
+        file: '/dotnet8-pipelines/nuget-commit-pipeline.yml'
+    strategy: depend
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
